@@ -1,6 +1,9 @@
 package seaweed
 
-import "net/http"
+import (
+	"net/http"
+	"os"
+)
 
 type Client struct {
 	ApiKey     string
@@ -12,4 +15,8 @@ func NewClient(apiKey string) *Client {
 		apiKey,
 		&http.Client{},
 	}
+}
+
+func LogRequests() bool {
+	return os.Getenv("SW_LOG") != ""
 }

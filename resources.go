@@ -1,5 +1,5 @@
 package seaweed
 
 type Day struct {
-	Date string
+	Date int64 `json:"timestamp,omitempty"`
 }
