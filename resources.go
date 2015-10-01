@@ -1,13 +1,14 @@
 package seaweed
 
 type Day struct {
-	Timestamp      int64 `json:"timestamp"`
-	LocalTimestamp int64 `json:"localTimestamp"`
-	IssueTimestamp int64 `json:"issueTimestamp"`
-	FadedRating    int   `json:"FadedRating"`
-	SolidRating    int   `json:"SolidRating"`
-	Swell          Swell `json:"swell"`
-	Wind           Wind  `json:"wind"`
+	Timestamp      int64     `json:"timestamp"`
+	LocalTimestamp int64     `json:"localTimestamp"`
+	IssueTimestamp int64     `json:"issueTimestamp"`
+	FadedRating    int       `json:"FadedRating"`
+	SolidRating    int       `json:"SolidRating"`
+	Swell          Swell     `json:"swell"`
+	Wind           Wind      `json:"wind"`
+	Condition      Condition `json:"condition"`
 }
 
 type Swell struct {
@@ -38,4 +39,12 @@ type Wind struct {
 	Chill            int64  `json:"chill"`
 	Gusts            int64  `json:"gusts"`
 	Unit             string `json:"mph"`
+}
+
+type Condition struct {
+	Pressure     int64  `json:"pressure"`
+	Temperature  int64  `json:"temperature"`
+	Weather      int64  `json:"weather"`
+	Unit         string `json:"f"`
+	UnitPressure string `json:"unitPressure"`
 }

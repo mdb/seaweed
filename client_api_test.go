@@ -86,4 +86,8 @@ func TestTomorrow(t *testing.T) {
 	if tomorrow.Wind.Speed != 13 {
 		t.Error("Tomorrow should properly return Wind.Speed")
 	}
+
+	if tomorrow.Condition.Pressure != 1008 {
+		t.Error("Tomorrow should properly return Condition.Pressure")
+	}
 }
