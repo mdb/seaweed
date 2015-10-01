@@ -20,7 +20,7 @@ import (
 
 func main() {
   client := seaweed.NewClient("<YOUR_API_KEY>")
-  resp, err := client.Tomorrow("<SOME_SPOT_ID>")
+  resp, err := client.Forecast("<SOME_SPOT_ID>")
   if err != nil {
     fmt.Println(err)
   }
