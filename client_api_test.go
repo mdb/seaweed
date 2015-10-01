@@ -52,27 +52,38 @@ func TestTomorrow(t *testing.T) {
 	}
 
 	if tomorrow.SolidRating != 0 {
-		t.Error("Tomorrow should properly return a SolidRating")
+		t.Error("Tomorrow should properly return SolidRating")
 	}
 
 	if tomorrow.Swell.MinBreakingHeight != 5 {
-		t.Error("Tomorrow should properly return a Swell.MinBreakingHeight")
+		t.Error("Tomorrow should properly return Swell.MinBreakingHeight")
 	}
 
 	if tomorrow.Swell.AbsMinBreakingHeight != 4.88 {
-		t.Error("Tomorrow should properly return a Swell.AbsMinBreakingHeight")
+		t.Error("Tomorrow should properly return Swell.AbsMinBreakingHeight")
 	}
 
 	if tomorrow.Swell.Unit != "ft" {
-		t.Error("Tomorrow should properly return a Swell.Unit")
+		t.Error("Tomorrow should properly return Swell.Unit")
 	}
 
 	if tomorrow.Swell.MaxBreakingHeight != 8 {
-		t.Error("Tomorrow should properly return a Swell.MaxBreakingHeight")
+		t.Error("Tomorrow should properly return Swell.MaxBreakingHeight")
 	}
 
 	if tomorrow.Swell.AbsMaxBreakingHeight != 7.63 {
-		t.Error("Tomorrow should properly return a Swell.AbsMaxBreakingHeight")
+		t.Error("Tomorrow should properly return Swell.AbsMaxBreakingHeight")
 	}
 
+	if tomorrow.Swell.Components.Combined.Height != 7.5 {
+		t.Error("Tomorrow should properly return Swell.Components.Combined.Height")
+	}
+
+	if tomorrow.Swell.Components.Primary.Height != 7.5 {
+		t.Error("Tomorrow should properly return Swell.Components.Primary.Height")
+	}
+
+	if tomorrow.Wind.Speed != 13 {
+		t.Error("Tomorrow should properly return Wind.Speed")
+	}
 }
