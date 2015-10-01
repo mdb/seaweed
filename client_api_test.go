@@ -54,4 +54,25 @@ func TestTomorrow(t *testing.T) {
 	if tomorrow.SolidRating != 0 {
 		t.Error("Tomorrow should properly return a SolidRating")
 	}
+
+	if tomorrow.Swell.MinBreakingHeight != 5 {
+		t.Error("Tomorrow should properly return a Swell.MinBreakingHeight")
+	}
+
+	if tomorrow.Swell.AbsMinBreakingHeight != 4.88 {
+		t.Error("Tomorrow should properly return a Swell.AbsMinBreakingHeight")
+	}
+
+	if tomorrow.Swell.Unit != "ft" {
+		t.Error("Tomorrow should properly return a Swell.Unit")
+	}
+
+	if tomorrow.Swell.MaxBreakingHeight != 8 {
+		t.Error("Tomorrow should properly return a Swell.MaxBreakingHeight")
+	}
+
+	if tomorrow.Swell.AbsMaxBreakingHeight != 7.63 {
+		t.Error("Tomorrow should properly return a Swell.AbsMaxBreakingHeight")
+	}
+
 }
