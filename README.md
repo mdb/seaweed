@@ -4,13 +4,18 @@ A thin, Golang-based [Magic Seaweed API](http://magicseaweed.com/developer/forec
 
 # Usage
 
+Installation:
+
 ```
 go get github.com/mdb/seaweed
 ```
 
+Example:
+
 ```
 import (
   "github.com/mdb/seaweed"
+  "github.com/tonnerre/golang-pretty"
 )
 
 func main() {
@@ -19,5 +24,7 @@ func main() {
   if err != nil {
     fmt.Println(err)
   }
+
+  fmt.Printf("%# v", pretty.Formatter(resp))
 }
 ```
