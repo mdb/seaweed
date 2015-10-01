@@ -1,11 +1,11 @@
 package seaweed
 
-func (c *Client) Tomorrow(spot string) (Day, error) {
-	forecast := []Day{}
-	err := request(c, spotEp(c, spot), &forecast)
+func (c *Client) Forecast(spot string) ([]Forecast, error) {
+	forecasts := []Forecast{}
+	err := request(c, spotEp(c, spot), &forecasts)
 	if err != nil {
 		panic(err)
 	}
 
-	return forecast[0], nil
+	return forecasts, nil
 }

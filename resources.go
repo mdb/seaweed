@@ -1,6 +1,6 @@
 package seaweed
 
-type Day struct {
+type Forecast struct {
 	Timestamp      int64     `json:"timestamp"`
 	LocalTimestamp int64     `json:"localTimestamp"`
 	IssueTimestamp int64     `json:"issueTimestamp"`
