@@ -36,6 +36,22 @@ func TestTomorrow(t *testing.T) {
 	tomorrow, _ := c.Tomorrow("123")
 
 	if tomorrow.Timestamp != 1443592800 {
-		t.Error("NewClient should properly set the API key")
+		t.Error("Tomorrow should properly return a Timestamp")
+	}
+
+	if tomorrow.LocalTimestamp != 1443571200 {
+		t.Error("Tomorrow should properly return a LocalTimestamp")
+	}
+
+	if tomorrow.IssueTimestamp != 1443592800 {
+		t.Error("Tomorrow should properly return an IssueTimestamp")
+	}
+
+	if tomorrow.FadedRating != 3 {
+		t.Error("Tomorrow should properly return a FadedRating")
+	}
+
+	if tomorrow.SolidRating != 0 {
+		t.Error("Tomorrow should properly return a SolidRating")
 	}
 }
