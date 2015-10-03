@@ -1,6 +1,9 @@
 package seaweed
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestConcat(t *testing.T) {
 	joined := concat([]string{
@@ -25,15 +28,18 @@ func TestMatchDays(t *testing.T) {
 		},
 	}
 
-	if len(matchDays(forecasts, 29)) != 1 {
-		t.Error("matchDays should properly return only the matched forecast days for a date")
+	dayOne := time.Unix(forecasts[0].LocalTimestamp, 0).Day()
+	dayTwo := time.Unix(forecasts[1].LocalTimestamp, 0).Day()
+
+	if len(matchDays(forecasts, dayOne)) != 1 {
+		t.Error("matchDays should properly return only the matched forecast days for a date (29)")
 	}
 
-	if matchDays(forecasts, 29)[0].Timestamp != 1 {
-		t.Error("matchDays should properly return the matched forecast days for a date")
+	if matchDays(forecasts, dayOne)[0].Timestamp != 1 {
+		t.Error("matchDays should properly return the matched forecast days for a date (29)")
 	}
 
-	if matchDays(forecasts, 3)[0].Timestamp != 2 {
-		t.Error("matchDays should properly return the matched forecast days for a date")
+	if matchDays(forecasts, dayTwo)[0].Timestamp != 2 {
+		t.Error("matchDays should properly return the matched forecast days for a date (3)")
 	}
 }
