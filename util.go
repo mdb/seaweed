@@ -47,11 +47,8 @@ func concat(arr []string) string {
 
 func matchDays(f []Forecast, match int) []Forecast {
 	matched := []Forecast{}
-	fmt.Println("===")
-	fmt.Printf("match: %v\n", match)
 
 	for _, each := range f {
-		fmt.Printf("each: %v\n", time.Unix(each.LocalTimestamp, 0).Day())
 		if time.Unix(each.LocalTimestamp, 0).Day() == match {
 			matched = append(matched, each)
 		}
