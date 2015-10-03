@@ -20,6 +20,10 @@ func request(c *Client, url string, responseStruct interface{}) error {
 	}
 
 	resp, err := c.HttpClient.Do(req)
+	if err != nil {
+		defer resp.Body.Close()
+		return err
+	}
 
 	bodyContents, err := ioutil.ReadAll(resp.Body)
 	if LogRequests() {
@@ -32,6 +36,7 @@ func request(c *Client, url string, responseStruct interface{}) error {
 	if err := json.Unmarshal(bodyContents, responseStruct); err != nil {
 		return err
 	}
+
 	return nil
 }
 
