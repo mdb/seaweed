@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mdb/seaweed.svg?branch=master)](https://travis-ci.org/mdb/seaweed)
+
 # seaweed
 
 A thin, Golang-based [Magic Seaweed API](http://magicseaweed.com/developer/forecast-api) client for fetching marine forecast data.
