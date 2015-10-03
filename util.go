@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 func request(c *Client, url string, responseStruct interface{}) error {
@@ -42,4 +43,16 @@ func concat(arr []string) string {
 	}
 
 	return buff.String()
+}
+
+func matchDays(f []Forecast, match int) []Forecast {
+	matched := []Forecast{}
+
+	for _, each := range f {
+		if time.Unix(each.LocalTimestamp, 0).Day() == match {
+			matched = append(matched, each)
+		}
+	}
+
+	return matched
 }
