@@ -38,7 +38,7 @@ type Wind struct {
 	CompassDirection string `json:"compassDirection"`
 	Chill            int64  `json:"chill"`
 	Gusts            int64  `json:"gusts"`
-	Unit             string `json:"mph"`
+	Unit             string `json:"unit"`
 }
 
 type Condition struct {
