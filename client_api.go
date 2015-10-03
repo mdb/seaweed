@@ -13,35 +13,21 @@ func (c *Client) Forecast(spot string) ([]Forecast, error) {
 }
 
 func (c *Client) Today(spot string) ([]Forecast, error) {
-	now := time.Now().Day()
-	today := []Forecast{}
+	today := time.Now().Day()
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
-		return today, err
+		return []Forecast{}, err
 	}
 
-	for _, each := range forecasts {
-		if time.Unix(each.LocalTimestamp, 0).Day() == now {
-			today = append(today, each)
-		}
-	}
-
-	return today, nil
+	return matchDays(forecasts, today), nil
 }
 
 func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
 	tomorrowDate := time.Now().Day() + 1
-	tomorrow := []Forecast{}
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
-		return tomorrow, err
+		return []Forecast{}, err
 	}
 
-	for _, each := range forecasts {
-		if time.Unix(each.LocalTimestamp, 0).Day() == tomorrowDate {
-			tomorrow = append(tomorrow, each)
-		}
-	}
-
-	return tomorrow, nil
+	return matchDays(forecasts, tomorrowDate), nil
 }
