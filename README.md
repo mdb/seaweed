@@ -28,3 +28,5 @@ func main() {
   fmt.Printf("%# v", pretty.Formatter(resp))
 }
 ```
+
+To log request/response details, set a `SW_LOG=true` environment variable.
