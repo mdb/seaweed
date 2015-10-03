@@ -28,3 +28,20 @@ func (c *Client) Today(spot string) ([]Forecast, error) {
 
 	return today, nil
 }
+
+func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
+	tomorrowDate := time.Now().Day() + 1
+	tomorrow := []Forecast{}
+	forecasts, err := c.Forecast(spot)
+	if err != nil {
+		return tomorrow, err
+	}
+
+	for _, each := range forecasts {
+		if time.Unix(each.LocalTimestamp, 0).Day() == tomorrowDate {
+			tomorrow = append(tomorrow, each)
+		}
+	}
+
+	return tomorrow, nil
+}
