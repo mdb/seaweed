@@ -92,3 +92,13 @@ func TestForecast(t *testing.T) {
 		t.Error("Forecast should properly return Condition.Pressure")
 	}
 }
+
+func TestForecastWithErr(t *testing.T) {
+	server, c := testTools(200, "{foo")
+	defer server.Close()
+	_, err := c.Forecast("123")
+
+	if err.Error() != "invalid character 'f' looking for beginning of object key string" {
+		t.Error("Forecast should properly catch and return errors")
+	}
+}
