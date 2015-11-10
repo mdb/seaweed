@@ -31,4 +31,23 @@ func main() {
 }
 ```
 
+Client methods:
+
+```
+import (
+  "github.com/mdb/seaweed"
+)
+
+client := seaweed.NewClient("<YOUR_API_KEY>")
+
+// Full forecast
+resp, err := client.Forecast("<SOME_SPOT_ID>")
+
+// Today's forecast
+resp, err := client.Today("<SOME_SPOT_ID>")
+
+// Tomorrow's forecast
+resp, err := client.Tomorrow("<SOME_SPOT_ID>")
+```
+
 To log request/response details, set a `SW_LOG=true` environment variable.
