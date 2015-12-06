@@ -4,7 +4,7 @@
 
 A thin, Golang-based [Magic Seaweed API](http://magicseaweed.com/developer/forecast-api) client for fetching marine forecast data.
 
-# Usage
+## Usage
 
 Installation:
 
@@ -50,4 +50,16 @@ resp, err := client.Today("<SOME_SPOT_ID>")
 resp, err := client.Tomorrow("<SOME_SPOT_ID>")
 ```
 
-To log request/response details, set a `SW_LOG=true` environment variable.
+## Options
+
+To log request/response details, set a `SW_LOG` env var:
+
+```
+SW_LOG=true
+```
+
+To disable 5 minute response caching, set a `SW_DISABLE_CACHE` env var:
+
+```
+SW_DISABLE_CACHE=true
+```
