@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var maxCacheAge, _ = time.ParseDuration("20s")
+var maxCacheAge, _ = time.ParseDuration("5m")
 
 func getForecast(c *Client, url string, responseStruct interface{}) error {
 	file := cacheFile(url)
