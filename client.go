@@ -20,3 +20,7 @@ func NewClient(apiKey string) *Client {
 func LogRequests() bool {
 	return os.Getenv("SW_LOG") != ""
 }
+
+func DisableCache() bool {
+	return os.Getenv("SW_DISABLE_CACHE") != ""
+}

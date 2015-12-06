@@ -20,13 +20,14 @@ func getForecast(c *Client, url string, responseStruct interface{}) error {
 	var body []byte
 
 	if isCacheStale(file) {
-
 		body, err = doRequest(c, url, responseStruct)
 		if err != nil {
 			return err
 		}
-		if err := writeCache(file, body); err != nil {
-			return err
+		if !DisableCache() {
+			if err := writeCache(file, body); err != nil {
+				return err
+			}
 		}
 	} else {
 		if LogRequests() {
@@ -96,7 +97,7 @@ func cacheFile(url string) string {
 func isCacheStale(cacheFile string) bool {
 	stat, err := os.Stat(cacheFile)
 
-	return os.IsNotExist(err) || time.Since(stat.ModTime()) > maxCacheAge
+	return os.IsNotExist(err) || time.Since(stat.ModTime()) > maxCacheAge || DisableCache()
 }
 
 func writeCache(cacheFile string, json []byte) (err error) {
