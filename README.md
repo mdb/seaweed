@@ -31,6 +31,17 @@ func main() {
 }
 ```
 
+Use a customized client:
+
+```
+client := seaweed.Client{
+  ApiKey:     string,
+	HttpClient: *http.Client,
+	CacheAge:   time.Duration, // override 5m default
+	CacheDir:   string, // override os.TempDir() value
+}
+```
+
 Client methods:
 
 ```
