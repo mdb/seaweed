@@ -69,7 +69,7 @@ To log request/response details, set a `SW_LOG` env var:
 SW_LOG=true
 ```
 
-To disable 5 minute response caching, set a `SW_DISABLE_CACHE` env var:
+To disable response caching, set a `SW_DISABLE_CACHE` env var:
 
 ```
 SW_DISABLE_CACHE=true
