@@ -12,14 +12,12 @@ import (
 	"time"
 )
 
-var maxCacheAge, _ = time.ParseDuration("5m")
-
 func getForecast(c *Client, url string, responseStruct interface{}) error {
-	file := cacheFile(url)
+	file := cacheFile(url, c)
 	var err error
 	var body []byte
 
-	if isCacheStale(file) {
+	if isCacheStale(file, c) {
 		body, err = doRequest(c, url, responseStruct)
 		if err != nil {
 			return err
@@ -89,15 +87,15 @@ func matchDays(f []Forecast, match int) []Forecast {
 	return matched
 }
 
-func cacheFile(url string) string {
+func cacheFile(url string, c *Client) string {
 	file := fmt.Sprintf("seaweed_%s", strings.Split(url, "=")[1])
-	return path.Join(os.TempDir(), file)
+	return path.Join(c.CacheDir, file)
 }
 
-func isCacheStale(cacheFile string) bool {
+func isCacheStale(cacheFile string, c *Client) bool {
 	stat, err := os.Stat(cacheFile)
 
-	return os.IsNotExist(err) || time.Since(stat.ModTime()) > maxCacheAge || DisableCache()
+	return os.IsNotExist(err) || time.Since(stat.ModTime()) > c.CacheAge || DisableCache()
 }
 
 func writeCache(cacheFile string, json []byte) (err error) {

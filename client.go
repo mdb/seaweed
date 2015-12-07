@@ -3,17 +3,24 @@ package seaweed
 import (
 	"net/http"
 	"os"
+	"time"
 )
 
 type Client struct {
 	ApiKey     string
 	HttpClient *http.Client
+	CacheAge   time.Duration
+	CacheDir   string
 }
 
 func NewClient(apiKey string) *Client {
+	dur, _ := time.ParseDuration("5m")
+
 	return &Client{
 		apiKey,
 		&http.Client{},
+		dur,
+		os.TempDir(),
 	}
 }
 
