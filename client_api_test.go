@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"testing"
+	"time"
 )
 
 var c = NewClient("fakeKey")
@@ -25,8 +26,14 @@ func testTools(code int, body string) (*httptest.Server, *Client) {
 	}
 
 	httpClient := &http.Client{Transport: tr}
+	dur, _ := time.ParseDuration("0s")
 
-	client := &Client{"fakeKey", httpClient}
+	client := &Client{
+		"fakeKey",
+		httpClient,
+		dur,
+		os.TempDir(),
+	}
 
 	return server, client
 }
