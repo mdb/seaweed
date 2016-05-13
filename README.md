@@ -59,6 +59,9 @@ resp, err := client.Today("<SOME_SPOT_ID>")
 
 // Tomorrow's forecast
 resp, err := client.Tomorrow("<SOME_SPOT_ID>")
+
+// Weekend forecast
+resp, err := client.Weekend("<SOME_SPOT_ID>")
 ```
 
 ## Options
