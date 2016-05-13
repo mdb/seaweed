@@ -111,3 +111,13 @@ func TestForecastWithErr(t *testing.T) {
 		t.Error("Forecast should properly catch and return errors")
 	}
 }
+
+func TestWeekendNoForecast(t *testing.T) {
+	server, c := testTools(200, resp)
+	defer server.Close()
+	forecasts, _ := c.Weekend("123")
+
+	if len(forecasts) > 0 {
+		t.Error("Weekend forecasts should be empty")
+	}
+}

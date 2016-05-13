@@ -87,6 +87,27 @@ func matchDays(f []Forecast, match int) []Forecast {
 	return matched
 }
 
+func matchWeekendDays(f []Forecast) []Forecast {
+	matched := []Forecast{}
+
+	for _, each := range f {
+		if isWeekend(each) {
+			matched = append(matched, each)
+		}
+	}
+
+	return matched
+}
+
+func isWeekend(f Forecast) bool {
+	day := time.Unix(f.LocalTimestamp, 0).Weekday().String()
+
+	if day == "Saturday" || day == "Sunday" {
+		return true
+	}
+	return false
+}
+
 func cacheFile(url string, c *Client) string {
 	file := fmt.Sprintf("seaweed_%s", strings.Split(url, "=")[1])
 	return path.Join(c.CacheDir, file)
