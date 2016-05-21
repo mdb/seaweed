@@ -2,11 +2,11 @@ package seaweed
 
 const apiBase = "http://magicseaweed.com/api/"
 
-func spotEp(c *Client, spotId string) string {
+func spotEP(c *Client, spotID string) string {
 	return concat([]string{
 		apiBase,
-		c.ApiKey,
+		c.APIKey,
 		"/forecast/?spot_id=",
-		spotId,
+		spotID,
 	})
 }
