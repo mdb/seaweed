@@ -5,3 +5,7 @@ go:
 
 script:
  - make
+
+notifications:
+  email:
+    on_failure: always
