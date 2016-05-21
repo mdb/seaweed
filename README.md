@@ -14,7 +14,7 @@ go get github.com/mdb/seaweed
 
 Example:
 
-```
+```go
 import (
   "github.com/mdb/seaweed"
   "github.com/tonnerre/golang-pretty"
@@ -33,18 +33,18 @@ func main() {
 
 Use a customized client:
 
-```
+```go
 client := seaweed.Client{
-  ApiKey:     string,
-	HttpClient: *http.Client,
-	CacheAge:   time.Duration, // override 5m default
-	CacheDir:   string, // override os.TempDir() value
+  APIKey:     string,
+  HttpClient: *http.Client,
+  CacheAge:   time.Duration, // override 5m default
+  CacheDir:   string, // override os.TempDir() value
 }
 ```
 
 Client methods:
 
-```
+```go
 import (
   "github.com/mdb/seaweed"
 )
