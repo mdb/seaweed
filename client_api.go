@@ -5,7 +5,7 @@ import "time"
 // Forecast fetches the full, multi-day forecast for a given spot
 func (c *Client) Forecast(spot string) ([]Forecast, error) {
 	forecasts := []Forecast{}
-	err := getForecast(c, spotEp(c, spot), &forecasts)
+	err := getForecast(c, spotEP(c, spot), &forecasts)
 	if err != nil {
 		return forecasts, err
 	}

@@ -22,13 +22,13 @@ func getForecast(c *Client, url string, responseStruct interface{}) error {
 		if err != nil {
 			return err
 		}
-		if !DisableCache() {
+		if !disableCache() {
 			if err := writeCache(file, body); err != nil {
 				return err
 			}
 		}
 	} else {
-		if LogRequests() {
+		if logRequests() {
 			fmt.Printf("Reading cached forecast file: \n\t%s\n", file)
 		}
 		body, err = ioutil.ReadFile(file)
@@ -40,7 +40,7 @@ func getForecast(c *Client, url string, responseStruct interface{}) error {
 }
 
 func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, er error) {
-	if LogRequests() {
+	if logRequests() {
 		fmt.Printf("Request url: \n\t%s\n", url)
 	}
 	req, err := http.NewRequest("GET", url, nil)
@@ -48,7 +48,7 @@ func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, 
 		return nil, err
 	}
 
-	resp, err := c.HttpClient.Do(req)
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		defer resp.Body.Close()
 		return nil, err
@@ -58,7 +58,7 @@ func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, 
 	if err != nil {
 		return nil, err
 	}
-	if LogRequests() {
+	if logRequests() {
 		fmt.Printf("Response status: \n\t%d\nresponse body: \n\t%s \n\n", resp.StatusCode, bodyContents)
 	}
 
@@ -116,7 +116,7 @@ func cacheFile(url string, c *Client) string {
 func isCacheStale(cacheFile string, c *Client) bool {
 	stat, err := os.Stat(cacheFile)
 
-	return os.IsNotExist(err) || time.Since(stat.ModTime()) > c.CacheAge || DisableCache()
+	return os.IsNotExist(err) || time.Since(stat.ModTime()) > c.CacheAge || disableCache()
 }
 
 func writeCache(cacheFile string, json []byte) (err error) {
