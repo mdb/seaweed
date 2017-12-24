@@ -39,6 +39,7 @@ client := seaweed.Client{
   HttpClient: *http.Client,
   CacheAge:   time.Duration, // override 5m default
   CacheDir:   string, // override os.TempDir() value
+  Log:        *logging.Logger, // override NewLogger(logging.INFO)
 }
 ```
 
@@ -65,12 +66,6 @@ resp, err := client.Weekend("<SOME_SPOT_ID>")
 ```
 
 ## Options
-
-To log request/response details, set a `SW_LOG` env var:
-
-```
-SW_LOG=true
-```
 
 To disable response caching, set a `SW_DISABLE_CACHE` env var:
 
