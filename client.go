@@ -26,7 +26,7 @@ func NewClient(APIKey string) *Client {
 		&http.Client{},
 		dur,
 		os.TempDir(),
-		NewLogger(),
+		NewLogger(logging.INFO),
 	}
 }
 

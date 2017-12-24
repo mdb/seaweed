@@ -8,6 +8,8 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	logging "github.com/op/go-logging"
 )
 
 var c = NewClient("fakeKey")
@@ -33,7 +35,7 @@ func testTools(code int, body string) (*httptest.Server, *Client) {
 		httpClient,
 		dur,
 		os.TempDir(),
-		NewLogger(),
+		NewLogger(logging.INFO),
 	}
 
 	return server, client
@@ -103,7 +105,6 @@ func TestForecast(t *testing.T) {
 }
 
 func TestForecastWithErr(t *testing.T) {
-	os.Setenv("SW_DISABLE_CACHE", "1")
 	server, c := testTools(200, "{foo")
 	defer server.Close()
 	_, err := c.Forecast("123")

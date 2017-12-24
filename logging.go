@@ -7,8 +7,9 @@ import (
 )
 
 // NewLogger returns a *logging.Logger configured for use with seaweed
-func NewLogger() *logging.Logger {
-	var log = logging.MustGetLogger("example")
+// and set to the logging.Level it's passed.
+func NewLogger(level logging.Level) *logging.Logger {
+	var log = logging.MustGetLogger("seaweed")
 
 	backend := logging.NewLogBackend(os.Stdout, "", 0)
 
@@ -19,7 +20,7 @@ func NewLogger() *logging.Logger {
 	backendFormatter := logging.NewBackendFormatter(backend, format)
 	backendLeveled := logging.AddModuleLevel(backendFormatter)
 
-	backendLeveled.SetLevel(logging.INFO, "")
+	backendLeveled.SetLevel(level, "")
 	logging.SetBackend(backendLeveled)
 
 	return log
