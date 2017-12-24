@@ -28,9 +28,7 @@ func getForecast(c *Client, url string, responseStruct interface{}) error {
 			}
 		}
 	} else {
-		if logRequests() {
-			fmt.Printf("Reading cached forecast file: \n\t%s\n", file)
-		}
+		c.Log.Debugf("Reading cached forecast file: \n\t%s\n", file)
 		body, err = ioutil.ReadFile(file)
 	}
 	if err := json.Unmarshal(body, responseStruct); err != nil {
@@ -40,9 +38,6 @@ func getForecast(c *Client, url string, responseStruct interface{}) error {
 }
 
 func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, er error) {
-	if logRequests() {
-		fmt.Printf("Request url: \n\t%s\n", url)
-	}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -58,9 +53,8 @@ func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, 
 	if err != nil {
 		return nil, err
 	}
-	if logRequests() {
-		fmt.Printf("Response status: \n\t%d\nresponse body: \n\t%s \n\n", resp.StatusCode, bodyContents)
-	}
+
+	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(bodyContents))
 
 	return bodyContents, nil
 }

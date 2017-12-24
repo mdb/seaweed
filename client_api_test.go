@@ -33,6 +33,7 @@ func testTools(code int, body string) (*httptest.Server, *Client) {
 		httpClient,
 		dur,
 		os.TempDir(),
+		NewLogger(),
 	}
 
 	return server, client

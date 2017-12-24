@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	logging "github.com/op/go-logging"
 )
 
 // Client represents a seaweed API client
@@ -12,6 +14,7 @@ type Client struct {
 	HTTPClient *http.Client
 	CacheAge   time.Duration
 	CacheDir   string
+	Log        *logging.Logger
 }
 
 // NewClient takes an API key and returns a seaweed API client
@@ -23,11 +26,8 @@ func NewClient(APIKey string) *Client {
 		&http.Client{},
 		dur,
 		os.TempDir(),
+		NewLogger(),
 	}
-}
-
-func logRequests() bool {
-	return os.Getenv("SW_LOG") != ""
 }
 
 func disableCache() bool {
