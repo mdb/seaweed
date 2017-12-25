@@ -50,7 +50,7 @@ type Wind struct {
 type Condition struct {
 	Pressure     int64  `json:"pressure"`
 	Temperature  int64  `json:"temperature"`
-	Weather      int64  `json:"weather"`
+	Weather      string `json:"weather"`
 	Unit         string `json:"f"`
 	UnitPressure string `json:"unitPressure"`
 }

@@ -39,7 +39,7 @@ const resp = `
 		"condition":{
 			"pressure":1008,
 			"temperature":73,
-			"weather":22,
+			"weather":"22",
 			"unitPressure":"mb",
 			"unit":"f"
 		},
