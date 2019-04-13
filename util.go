@@ -30,6 +30,9 @@ func getForecast(c *Client, url string, responseStruct interface{}) error {
 	} else {
 		c.Log.Debugf("Reading cached forecast file: \n\t%s\n", file)
 		body, err = ioutil.ReadFile(file)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = json.Unmarshal(body, responseStruct)
