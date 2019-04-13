@@ -18,11 +18,11 @@ func TestConcat(t *testing.T) {
 
 func TestMatchDays(t *testing.T) {
 	forecasts := []Forecast{
-		Forecast{
+		{
 			Timestamp:      1, // 9/29
 			LocalTimestamp: 1443571200,
 		},
-		Forecast{
+		{
 			Timestamp:      2,
 			LocalTimestamp: 1443872436, // 10/3
 		},
