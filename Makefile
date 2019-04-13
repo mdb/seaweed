@@ -1,6 +1,4 @@
-VETARGS?=-all
-
-all: updatedeps lint vet test install
+all: updatedeps test install
 
 updatedeps:
 	@go tool cover 2>/dev/null; if [ $$? -eq 3 ]; then \
@@ -23,20 +21,3 @@ cover:
 
 install:
 	go install
-
-lint:
-	golint -set_exit_status
-
-# vet runs the Go source code static analysis tool `vet` to find
-# any common errors.
-vet:
-	@go tool vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
-		go get golang.org/x/tools/cmd/vet; \
-	fi
-	@echo "go tool vet $(VETARGS)"
-	@go tool vet $(VETARGS) . ; if [ $$? -eq 1 ]; then \
-		echo ""; \
-		echo "Vet found suspicious constructs. Please check the reported constructs"; \
-		echo "and fix them if necessary before submitting the code for review."; \
-		exit 1; \
-	fi
