@@ -10,6 +10,9 @@ updatedeps:
 	go get github.com/golang/lint/golint
 	go get
 
+fmt:
+	gofmt -s -w .
+
 test:
 	go test -cover
 
