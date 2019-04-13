@@ -6,14 +6,14 @@ updatedeps:
 	@go tool cover 2>/dev/null; if [ $$? -eq 3 ]; then \
 		go get -u golang.org/x/tools/cmd/cover; \
 	fi
-	go get github.com/gobs/pretty
-	go get github.com/golang/lint/golint
-	go get
+	go get -u github.com/golang/dep/cmd/dep
+	dep ensure
 
 fmt:
 	gofmt -s -w .
 
 test:
+	go vet
 	go test -cover
 
 cover:
