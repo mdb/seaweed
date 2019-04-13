@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mdb/seaweed.svg?branch=master)](https://travis-ci.org/mdb/seaweed)
+[![Build Status](https://travis-ci.org/mdb/seaweed.svg?branch=master)](https://travis-ci.org/mdb/seaweed) [![Go Report Card](https://goreportcard.com/badge/github.com/mdb/seaweed)](https://goreportcard.com/report/github.com/mdb/seaweed)
 
 # seaweed
 
