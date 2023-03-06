@@ -1,3 +1,5 @@
+[![CI](https://github.com/mdb/seaweed/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/mdb/seaweed/actions/workflows/ci.yaml)
+
 # seaweed
 
 A thin, Golang-based [Magic Seaweed API](http://magicseaweed.com/developer/forecast-api) client for fetching marine forecast data.
