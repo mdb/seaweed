@@ -1,6 +1,6 @@
 package seaweed
 
-// Forecast represents a Seaweed API forecast
+// Forecast represents a Seaweed API forecast.
 type Forecast struct {
 	Timestamp      int64     `json:"timestamp"`
 	LocalTimestamp int64     `json:"localTimestamp"`
@@ -12,7 +12,7 @@ type Forecast struct {
 	Condition      Condition `json:"condition"`
 }
 
-// Swell represents a Seaweed API forecast's swell
+// Swell represents a Seaweed API forecast's swell.
 type Swell struct {
 	MinBreakingHeight    int        `json:"minBreakingHeight"`
 	AbsMinBreakingHeight float64    `json:"absMinBreakingHeight"`
@@ -22,13 +22,13 @@ type Swell struct {
 	Components           Components `json:"components"`
 }
 
-// Components represents a Seaweed API forecast's swell's components
+// Components represents a Seaweed API forecast's swell's components.
 type Components struct {
 	Combined Component `json:"combined"`
 	Primary  Component `json:"primary"`
 }
 
-// Component represents a Seaweed API forecast's swell component
+// Component represents a Seaweed API forecast's swell component.
 type Component struct {
 	Height           float64 `json:"height"`
 	Period           int     `json:"period"`
@@ -36,7 +36,7 @@ type Component struct {
 	CompassDirection string  `json:"compassDirection"`
 }
 
-// Wind represents a Seaweed API forecast's wind
+// Wind represents a Seaweed API forecast's wind.
 type Wind struct {
 	Speed            int    `json:"speed"`
 	Direction        int64  `json:"direction"`
@@ -46,7 +46,7 @@ type Wind struct {
 	Unit             string `json:"unit"`
 }
 
-// Condition represents a Seaweed API forecast's condition
+// Condition represents a Seaweed API forecast's condition.
 type Condition struct {
 	Pressure     int64  `json:"pressure"`
 	Temperature  int64  `json:"temperature"`
