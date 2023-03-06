@@ -1,16 +1,8 @@
-[![Build Status](https://travis-ci.org/mdb/seaweed.svg?branch=master)](https://travis-ci.org/mdb/seaweed) [![Go Report Card](https://goreportcard.com/badge/github.com/mdb/seaweed)](https://goreportcard.com/report/github.com/mdb/seaweed)
-
 # seaweed
 
 A thin, Golang-based [Magic Seaweed API](http://magicseaweed.com/developer/forecast-api) client for fetching marine forecast data.
 
 ## Usage
-
-Installation:
-
-```
-go get github.com/mdb/seaweed
-```
 
 Example:
 
@@ -24,7 +16,7 @@ func main() {
   client := seaweed.NewClient("<YOUR_API_KEY>")
   resp, err := client.Forecast("<SOME_SPOT_ID>")
   if err != nil {
-    fmt.Println(err)
+    panic(err)
   }
 
   fmt.Printf("%# v", pretty.Formatter(resp))
