@@ -12,7 +12,19 @@ import (
 	"time"
 )
 
-func getForecast(c *Client, url string, responseStruct interface{}) error {
+const apiBase = "http://magicseaweed.com/api/"
+
+func spotEP(c *Client, spotID string) string {
+	return concat([]string{
+		apiBase,
+		c.APIKey,
+		"/forecast/?spot_id=",
+		spotID,
+	})
+}
+
+func getForecast(c *Client, spotID string, responseStruct interface{}) error {
+	url := spotEP(c, spotID)
 	file := cacheFile(url, c)
 	var err error
 	var body []byte
