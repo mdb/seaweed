@@ -11,14 +11,8 @@ import (
 	"time"
 )
 
-const apiBase = "http://magicseaweed.com/api/"
-
-func spotEP(c *Client, spotID string) string {
-	return fmt.Sprintf("http://magicseaweed.com/api/%s/forecast/?spot_id=%s", c.APIKey, spotID)
-}
-
 func getForecast(c *Client, spotID string, responseStruct interface{}) error {
-	url := spotEP(c, spotID)
+	url := fmt.Sprintf("http://magicseaweed.com/api/%s/forecast/?spot_id=%s", c.APIKey, spotID)
 	file := cacheFile(url, c)
 	var err error
 	var body []byte
