@@ -1,7 +1,6 @@
 package seaweed
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,12 +14,7 @@ import (
 const apiBase = "http://magicseaweed.com/api/"
 
 func spotEP(c *Client, spotID string) string {
-	return concat([]string{
-		apiBase,
-		c.APIKey,
-		"/forecast/?spot_id=",
-		spotID,
-	})
+	return fmt.Sprintf("http://magicseaweed.com/api/%s/forecast/?spot_id=%s", c.APIKey, spotID)
 }
 
 func getForecast(c *Client, spotID string, responseStruct interface{}) error {
@@ -75,16 +69,6 @@ func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, 
 	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(bodyContents))
 
 	return bodyContents, nil
-}
-
-func concat(arr []string) string {
-	var buff bytes.Buffer
-
-	for _, elem := range arr {
-		buff.WriteString(elem)
-	}
-
-	return buff.String()
 }
 
 func matchDays(f []Forecast, match int) []Forecast {
