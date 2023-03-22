@@ -2,6 +2,8 @@ package seaweed
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -12,19 +14,18 @@ import (
 	logging "github.com/op/go-logging"
 )
 
-func TestNewClient(t *testing.T) {
-	client := NewClient("fakeKey")
-	age, _ := time.ParseDuration("5m")
+var resp string
 
-	if client.APIKey != "fakeKey" {
-		t.Error("NewClient should properly set the API key")
+func TestMain(m *testing.M) {
+	content, err := ioutil.ReadFile("testdata/response.json")
+	if err != nil {
+		log.Fatal(err)
 	}
-	if client.CacheAge != age {
-		t.Error("NewClient should properly set the default 5m cache age")
-	}
-	if client.CacheDir != os.TempDir() {
-		t.Error("NewClient should properly set the default cache directory")
-	}
+
+	resp = string(content)
+
+	exitVal := m.Run()
+	os.Exit(exitVal)
 }
 
 type testClock struct{}
@@ -59,6 +60,21 @@ func testTools(code int, body string) (*httptest.Server, *Client) {
 	}
 
 	return server, client
+}
+
+func TestNewClient(t *testing.T) {
+	client := NewClient("fakeKey")
+	age, _ := time.ParseDuration("5m")
+
+	if client.APIKey != "fakeKey" {
+		t.Error("NewClient should properly set the API key")
+	}
+	if client.CacheAge != age {
+		t.Error("NewClient should properly set the default 5m cache age")
+	}
+	if client.CacheDir != os.TempDir() {
+		t.Error("NewClient should properly set the default cache directory")
+	}
 }
 
 func TestForecast(t *testing.T) {
