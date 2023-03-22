@@ -31,6 +31,7 @@ func TestMain(m *testing.M) {
 type testClock struct{}
 
 func (testClock) Now() time.Time {
+	fmt.Println(time.Unix(1443571200, 0))
 	return time.Unix(1443571200, 0)
 }
 

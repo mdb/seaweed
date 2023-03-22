@@ -1,6 +1,7 @@
 package seaweed
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -68,6 +69,8 @@ func (c *Client) Today(spot string) ([]Forecast, error) {
 // Tomorrow fetches tomorrow's forecast for a given spot.
 func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
 	tomorrowDate := c.clock.Now().Day() + 1
+	fmt.Printf("\ntoday: %s", c.clock.Now())
+	fmt.Printf("\ntomorrow: %d", tomorrowDate)
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
 		return []Forecast{}, err
