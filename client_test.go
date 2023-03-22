@@ -127,6 +127,17 @@ func TestForecastWithErr(t *testing.T) {
 	}
 }
 
+func TestForecastWithNonOKResp(t *testing.T) {
+	server, c := testTools(500, resp)
+	defer server.Close()
+	_, err := c.Forecast("123")
+
+	expected := "http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"
+	if err.Error() != expected {
+		t.Error(fmt.Sprintf("expected error '%s'; received '%s'", expected, err.Error()))
+	}
+}
+
 func TestWeekendNoForecast(t *testing.T) {
 	server, c := testTools(200, resp)
 	defer server.Close()

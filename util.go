@@ -44,14 +44,8 @@ func getForecast(c *Client, spotID string, responseStruct interface{}) error {
 }
 
 func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, er error) {
-	req, err := http.NewRequest("GET", url, nil)
+	resp, err := c.HTTPClient.Get(url)
 	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		defer resp.Body.Close()
 		return nil, err
 	}
 
@@ -60,9 +54,13 @@ func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, 
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		err = fmt.Errorf("%s returned HTTP status code %d", url, resp.StatusCode)
+	}
+
 	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(bodyContents))
 
-	return bodyContents, nil
+	return bodyContents, err
 }
 
 func matchDays(f []Forecast, match int) []Forecast {
