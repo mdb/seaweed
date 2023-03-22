@@ -161,13 +161,67 @@ func TestForecastWithNonOKResp(t *testing.T) {
 	}
 }
 
-func TestWeekendNoForecast(t *testing.T) {
+func TestWeekend(t *testing.T) {
 	server, c := testTools(200, resp)
 	defer server.Close()
 	forecasts, _ := c.Weekend("123")
 
-	if len(forecasts) > 0 {
-		t.Error("Weekend forecasts should be empty")
+	forecast := forecasts[0]
+
+	if forecast.Timestamp != 1677973254 {
+		t.Error("Forecast should properly return a Timestamp")
+	}
+
+	if forecast.LocalTimestamp != 1677973254 {
+		t.Error("Forecast should properly return a LocalTimestamp")
+	}
+
+	if forecast.IssueTimestamp != 1677973254 {
+		t.Error("Forecast should properly return an IssueTimestamp")
+	}
+
+	if forecast.FadedRating != 3 {
+		t.Error("Forecast should properly return a FadedRating")
+	}
+
+	if forecast.SolidRating != 0 {
+		t.Error("Forecast should properly return SolidRating")
+	}
+
+	if forecast.Swell.MinBreakingHeight != 5 {
+		t.Error("Forecast should properly return Swell.MinBreakingHeight")
+	}
+
+	if forecast.Swell.AbsMinBreakingHeight != 4.88 {
+		t.Error("Forecast should properly return Swell.AbsMinBreakingHeight")
+	}
+
+	if forecast.Swell.Unit != "ft" {
+		t.Error("Forecast should properly return Swell.Unit")
+	}
+
+	if forecast.Swell.MaxBreakingHeight != 8 {
+		t.Error("Forecast should properly return Swell.MaxBreakingHeight")
+	}
+
+	if forecast.Swell.AbsMaxBreakingHeight != 7.63 {
+		t.Error("Forecast should properly return Swell.AbsMaxBreakingHeight")
+	}
+
+	if forecast.Swell.Components.Combined.Height != 7.5 {
+		t.Error("Forecast should properly return Swell.Components.Combined.Height")
+	}
+
+	if forecast.Swell.Components.Primary.Height != 7.5 {
+		t.Error("Forecast should properly return Swell.Components.Primary.Height")
+	}
+
+	if forecast.Wind.Speed != 13 {
+		t.Error("Forecast should properly return Wind.Speed")
+	}
+
+	if forecast.Condition.Pressure != 1008 {
+		t.Error("Forecast should properly return Condition.Pressure")
 	}
 }
 
