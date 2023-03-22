@@ -14,6 +14,7 @@ type Forecast struct {
 	Condition      Condition `json:"condition"`
 }
 
+// IsWeekend returns true if a forecast pertains to a Saturday or a Sunday.
 func (f Forecast) IsWeekend() bool {
 	day := time.Unix(f.LocalTimestamp, 0).UTC().Weekday().String()
 
