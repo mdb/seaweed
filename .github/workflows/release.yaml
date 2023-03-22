@@ -33,4 +33,4 @@ jobs:
     needs: release
     runs-on: ubuntu-latest
     steps:
-      - run: curl "https://proxy.golang.org/github.com/mdb/funcy/@v/${{ github.ref_name }}.info"
+      - run: curl "https://proxy.golang.org/github.com/${{ github.repository }}/@v/${{ github.ref_name }}.info"
