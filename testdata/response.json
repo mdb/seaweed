@@ -1,7 +1,7 @@
 [{
-  "timestamp":1443592800,
-  "localTimestamp":1443571200,
-  "issueTimestamp":1443592800,
+  "timestamp":1442355356,
+  "localTimestamp":1442355356,
+  "issueTimestamp":1442355356,
   "fadedRating":3,
   "solidRating":0,
   "swell":{
@@ -48,9 +48,9 @@
     "sst":"http:\/\/hist-2.msw.ms\/sst\/750\/20-1443592800-10.gif"
   }
 }, {
-  "timestamp":1443592800,
-  "localTimestamp":1443657600,
-  "issueTimestamp":1443592800,
+  "timestamp":1442441756,
+  "localTimestamp":1442441756,
+  "issueTimestamp":1442441756,
   "fadedRating":3,
   "solidRating":0,
   "swell":{

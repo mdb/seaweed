@@ -66,10 +66,8 @@ func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, 
 func matchDays(f []Forecast, match int) []Forecast {
 	matched := []Forecast{}
 
-	fmt.Printf("\nmatch: %d", match)
 	for _, each := range f {
-		fmt.Printf("\nday: %d", time.Unix(each.LocalTimestamp, 0).Day())
-		if time.Unix(each.LocalTimestamp, 0).Day() == match {
+		if time.Unix(each.LocalTimestamp, 0).UTC().Day() == match {
 			matched = append(matched, each)
 		}
 	}

@@ -8,7 +8,7 @@ import (
 func TestMatchDays(t *testing.T) {
 	forecasts := []Forecast{
 		{
-			Timestamp:      1, // 9/29
+			Timestamp:      1, // 9/30
 			LocalTimestamp: 1443571200,
 		},
 		{
@@ -17,15 +17,15 @@ func TestMatchDays(t *testing.T) {
 		},
 	}
 
-	dayOne := time.Unix(forecasts[0].LocalTimestamp, 0).Day()
-	dayTwo := time.Unix(forecasts[1].LocalTimestamp, 0).Day()
+	dayOne := time.Unix(forecasts[0].LocalTimestamp, 0).UTC().Day()
+	dayTwo := time.Unix(forecasts[1].LocalTimestamp, 0).UTC().Day()
 
 	if len(matchDays(forecasts, dayOne)) != 1 {
-		t.Error("matchDays should properly return only the matched forecast days for a date (29)")
+		t.Error("matchDays should properly return only the matched forecast days for a date (30)")
 	}
 
 	if matchDays(forecasts, dayOne)[0].Timestamp != 1 {
-		t.Error("matchDays should properly return the matched forecast days for a date (29)")
+		t.Error("matchDays should properly return the matched forecast days for a date (30)")
 	}
 
 	if matchDays(forecasts, dayTwo)[0].Timestamp != 2 {

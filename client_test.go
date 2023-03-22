@@ -31,8 +31,7 @@ func TestMain(m *testing.M) {
 type testClock struct{}
 
 func (testClock) Now() time.Time {
-	fmt.Println(time.Unix(1443571200, 0))
-	return time.Unix(1443571200, 0)
+	return time.Unix(1442355356, 0).UTC()
 }
 
 func testTools(code int, body string) (*httptest.Server, *Client) {
@@ -84,15 +83,15 @@ func TestForecast(t *testing.T) {
 	forecasts, _ := c.Forecast("123")
 	forecast := forecasts[0]
 
-	if forecast.Timestamp != 1443592800 {
+	if forecast.Timestamp != 1442355356 {
 		t.Error("Forecast should properly return a Timestamp")
 	}
 
-	if forecast.LocalTimestamp != 1443571200 {
+	if forecast.LocalTimestamp != 1442355356 {
 		t.Error("Forecast should properly return a LocalTimestamp")
 	}
 
-	if forecast.IssueTimestamp != 1443592800 {
+	if forecast.IssueTimestamp != 1442355356 {
 		t.Error("Forecast should properly return an IssueTimestamp")
 	}
 
@@ -194,15 +193,15 @@ func TestToday(t *testing.T) {
 
 	forecast := forecasts[0]
 
-	if forecast.Timestamp != 1443592800 {
+	if forecast.Timestamp != 1442355356 {
 		t.Error("Forecast should properly return a Timestamp")
 	}
 
-	if forecast.LocalTimestamp != 1443571200 {
+	if forecast.LocalTimestamp != 1442355356 {
 		t.Error("Forecast should properly return a LocalTimestamp")
 	}
 
-	if forecast.IssueTimestamp != 1443592800 {
+	if forecast.IssueTimestamp != 1442355356 {
 		t.Error("Forecast should properly return an IssueTimestamp")
 	}
 
@@ -273,15 +272,15 @@ func TestTomorrow(t *testing.T) {
 
 	forecast := forecasts[0]
 
-	if forecast.Timestamp != 1443592800 {
+	if forecast.Timestamp != 1442441756 {
 		t.Error("Forecast should properly return a Timestamp")
 	}
 
-	if forecast.LocalTimestamp != 1443657600 {
+	if forecast.LocalTimestamp != 1442441756 {
 		t.Error("Forecast should properly return a LocalTimestamp")
 	}
 
-	if forecast.IssueTimestamp != 1443592800 {
+	if forecast.IssueTimestamp != 1442441756 {
 		t.Error("Forecast should properly return an IssueTimestamp")
 	}
 
