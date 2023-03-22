@@ -78,12 +78,19 @@ func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
 
 // Weekend fetches the weekend's forecast for a given spot.
 func (c *Client) Weekend(spot string) ([]Forecast, error) {
+	weekendFs := []Forecast{}
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
-		return []Forecast{}, err
+		return weekendFs, err
 	}
 
-	return matchWeekendDays(forecasts), nil
+	for _, each := range forecasts {
+		if each.IsWeekend() {
+			weekendFs = append(weekendFs, each)
+		}
+	}
+
+	return weekendFs, nil
 }
 
 func disableCache() bool {
