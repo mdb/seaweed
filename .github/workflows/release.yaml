@@ -17,6 +17,9 @@ jobs:
         with:
           go-version-file: go.mod
       - run: make
+      - run: make int-test
+        env:
+          MAGIC_SEAWEED_API_KEY: ${{ secrets.MAGIC_SEAWEED_API_KEY }}
 
   release:
     needs: test
