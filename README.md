@@ -2,7 +2,7 @@
 
 # seaweed
 
-A thin, Golang-based [Magic Seaweed API](http://magicseaweed.com/developer/forecast-api) client for fetching marine forecast data.
+A thin, Go [Magic Seaweed API](http://magicseaweed.com/developer/forecast-api) client for fetching marine forecast data.
 
 ## Usage
 
