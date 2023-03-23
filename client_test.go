@@ -35,7 +35,7 @@ func (testClock) Now() time.Time {
 	return time.Unix(1442355356, 0).UTC()
 }
 
-func testTools(code int, body string) (*httptest.Server, *Client) {
+func testServerAndClient(code int, body string) (*httptest.Server, *Client) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(code)
 		w.Header().Set("Content-Type", "application/json")
@@ -108,7 +108,7 @@ func TestForecast(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			server, c := testTools(test.code, test.body)
+			server, c := testServerAndClient(test.code, test.body)
 			defer server.Close()
 			forecasts, err := c.Forecast("123")
 
@@ -139,87 +139,119 @@ func TestForecast(t *testing.T) {
 }
 
 func TestWeekend(t *testing.T) {
-	server, c := testTools(200, resp)
-	defer server.Close()
-	forecasts, _ := c.Weekend("123")
+	tests := []struct {
+		desc                 string
+		body                 string
+		code                 int
+		expectError          error
+		expectForecastCount  int
+		expectLocalTimestamp int64
+	}{{
+		desc:                 "when successful",
+		body:                 resp,
+		code:                 200,
+		expectForecastCount:  1,
+		expectLocalTimestamp: 1677973254,
+	}, {
+		desc:                "when the response body is invalid JSON",
+		body:                "{foo:",
+		code:                200,
+		expectForecastCount: 0,
+		expectError:         errors.New("invalid character 'f' looking for beginning of object key string"),
+	}, {
+		desc:                "when the response code is not OK",
+		body:                resp,
+		code:                500,
+		expectForecastCount: 0,
+		expectError:         errors.New("http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"),
+	}}
 
-	if len(forecasts) > 1 {
-		t.Error("Weekend should only return Forecasts pertaining to Saturdays or Sundays")
-	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			server, c := testServerAndClient(test.code, test.body)
+			defer server.Close()
+			forecasts, err := c.Weekend("123")
 
-	forecast := forecasts[0]
-	if forecast.LocalTimestamp != 1677973254 {
-		t.Error("Weekend should return Forecasts pertaining to Saturdays or Sundays")
-	}
-}
+			if err != nil && test.expectError == nil {
+				t.Errorf("expected '%s' not to error; got '%v'", test.desc, err)
+			}
 
-func TestWeekendWithNonOKResp(t *testing.T) {
-	server, c := testTools(500, resp)
-	defer server.Close()
-	_, err := c.Weekend("123")
+			if test.expectError != nil && err == nil {
+				t.Errorf("expected error '%s'; got '%v'", test.expectError.Error(), err)
+			}
 
-	expected := "http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"
-	if err.Error() != expected {
-		t.Errorf("expected error '%s'; received '%s'", expected, err.Error())
+			if test.expectError != nil && err != nil && test.expectError.Error() != err.Error() {
+				t.Errorf("expected error '%s'; got '%v'", test.expectError.Error(), err)
+			}
+
+			if len(forecasts) != test.expectForecastCount {
+				t.Errorf("expected '%d' forecasts; got '%d'", test.expectForecastCount, len(forecasts))
+			}
+
+			if test.expectError == nil && err == nil {
+				if forecasts[0].LocalTimestamp != test.expectLocalTimestamp {
+					t.Errorf("expected LocalTimestamp '%d'; got '%d'", test.expectLocalTimestamp, forecasts[0].LocalTimestamp)
+				}
+			}
+		})
 	}
 }
 
 func TestToday(t *testing.T) {
-	server, c := testTools(200, resp)
-	defer server.Close()
+	tests := []struct {
+		desc                 string
+		body                 string
+		code                 int
+		expectError          error
+		expectForecastCount  int
+		expectLocalTimestamp int64
+	}{{
+		desc:                 "when successful",
+		body:                 resp,
+		code:                 200,
+		expectForecastCount:  1,
+		expectLocalTimestamp: 1442355356,
+	}, {
+		desc:                "when the response body is invalid JSON",
+		body:                "{foo:",
+		code:                200,
+		expectForecastCount: 0,
+		expectError:         errors.New("invalid character 'f' looking for beginning of object key string"),
+	}, {
+		desc:                "when the response code is not OK",
+		body:                resp,
+		code:                500,
+		expectForecastCount: 0,
+		expectError:         errors.New("http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"),
+	}}
 
-	forecasts, err := c.Today("123")
-	if err != nil {
-		t.Error(err.Error())
-	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			server, c := testServerAndClient(test.code, test.body)
+			defer server.Close()
+			forecasts, err := c.Today("123")
 
-	if len(forecasts) > 1 {
-		t.Error("Today should only return Forecasts whose timestamp match today")
-	}
+			if err != nil && test.expectError == nil {
+				t.Errorf("expected '%s' not to error; got '%v'", test.desc, err)
+			}
 
-	forecast := forecasts[0]
-	if forecast.LocalTimestamp != 1442355356 {
-		t.Error("Today should return a Forecast whose timestamp matches today")
-	}
-}
+			if test.expectError != nil && err == nil {
+				t.Errorf("expected error '%s'; got '%v'", test.expectError.Error(), err)
+			}
 
-func TestTodayWithNonOKResp(t *testing.T) {
-	server, c := testTools(500, resp)
-	defer server.Close()
-	_, err := c.Today("123")
+			if test.expectError != nil && err != nil && test.expectError.Error() != err.Error() {
+				t.Errorf("expected error '%s'; got '%v'", test.expectError.Error(), err)
+			}
 
-	expected := "http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"
-	if err.Error() != expected {
-		t.Error(fmt.Sprintf("expected error '%s'; received '%s'", expected, err.Error()))
-	}
-}
+			if len(forecasts) != test.expectForecastCount {
+				t.Errorf("expected '%d' forecasts; got '%d'", test.expectForecastCount, len(forecasts))
+			}
 
-func TestTomorrow(t *testing.T) {
-	server, c := testTools(200, resp)
-	defer server.Close()
-
-	forecasts, err := c.Tomorrow("123")
-	if err != nil {
-		t.Error(err.Error())
-	}
-
-	if len(forecasts) > 1 {
-		t.Error("Today should only return Forecasts whose timestamp match tomorrow")
-	}
-
-	forecast := forecasts[0]
-	if forecast.LocalTimestamp != 1442441756 {
-		t.Error("Today should return a Forecast whose timestamp matches tomorrow")
-	}
-}
-
-func TestTomorrowWithNonOKResp(t *testing.T) {
-	server, c := testTools(500, resp)
-	defer server.Close()
-	_, err := c.Tomorrow("123")
-
-	expected := "http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"
-	if err.Error() != expected {
-		t.Errorf("expected error '%s'; received '%s'", expected, err.Error())
+			if test.expectError == nil && err == nil {
+				if forecasts[0].LocalTimestamp != test.expectLocalTimestamp {
+					t.Errorf("expected LocalTimestamp '%d'; got '%d'", test.expectLocalTimestamp, forecasts[0].LocalTimestamp)
+				}
+			}
+		})
 	}
 }
