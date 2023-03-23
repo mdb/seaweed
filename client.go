@@ -1,6 +1,9 @@
 package seaweed
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -40,8 +43,7 @@ func NewClient(APIKey string) *Client {
 
 // Forecast fetches the full, multi-day forecast for a given spot.
 func (c *Client) Forecast(spot string) ([]Forecast, error) {
-	forecasts := []Forecast{}
-	err := getForecast(c, spot, &forecasts)
+	forecasts, err := c.getForecast(spot)
 	if err != nil {
 		return forecasts, err
 	}
@@ -100,4 +102,40 @@ func (c *Client) Weekend(spot string) ([]Forecast, error) {
 	}
 
 	return weekendFs, nil
+}
+
+func (c *Client) getForecast(spotID string) ([]Forecast, error) {
+	url := fmt.Sprintf("http://magicseaweed.com/api/%s/forecast/?spot_id=%s", c.APIKey, spotID)
+	forecasts := []Forecast{}
+	body, err := c.get(url)
+	if err != nil {
+		return forecasts, err
+	}
+
+	err = json.Unmarshal(body, &forecasts)
+	if err != nil {
+		return forecasts, err
+	}
+
+	return forecasts, nil
+}
+
+func (c *Client) get(url string) ([]byte, error) {
+	resp, err := c.HTTPClient.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	bodyContents, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		err = fmt.Errorf("%s returned HTTP status code %d", url, resp.StatusCode)
+	}
+
+	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(bodyContents))
+
+	return bodyContents, err
 }
