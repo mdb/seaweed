@@ -2,15 +2,18 @@ package seaweed
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
 )
 
 // Clock is a clock interface used to report the current time.
+// It exists largely to test the Client#Tomorrow method.
 type Clock interface {
 	Now() time.Time
 }
@@ -41,7 +44,15 @@ func NewClient(APIKey string) *Client {
 	}
 }
 
-// Forecast fetches the full, multi-day forecast for a given spot.
+// Forecast fetches the full, multi-day forecast for a given spot ID.
+//
+// A spot's ID appears in its URL. For example, Ocean City, NJ's spot ID is 391:
+// https://magicseaweed.com/Ocean-City-NJ-Surf-Report/391/
+//
+// Note that the Magic Seaweed API may respond with an HTTP status code of 200
+// and a response body reporting an error (see APIError). Forecast attempts to
+// handle such instances by returning an error surfacing the response body error
+// message.
 func (c *Client) Forecast(spot string) ([]Forecast, error) {
 	forecasts, err := c.getForecast(spot)
 	if err != nil {
@@ -51,7 +62,7 @@ func (c *Client) Forecast(spot string) ([]Forecast, error) {
 	return forecasts, nil
 }
 
-// Today fetches the today's forecast for a given spot.
+// Today fetches the today's forecast for a given spot ID.
 func (c *Client) Today(spot string) ([]Forecast, error) {
 	today := []Forecast{}
 	now := c.clock.Now().UTC()
@@ -69,7 +80,7 @@ func (c *Client) Today(spot string) ([]Forecast, error) {
 	return today, nil
 }
 
-// Tomorrow fetches tomorrow's forecast for a given spot.
+// Tomorrow fetches tomorrow's forecast for a given spot ID.
 func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
 	tomorrow := []Forecast{}
 	tomorrowD := c.clock.Now().UTC().AddDate(0, 0, 1)
@@ -87,7 +98,7 @@ func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
 	return tomorrow, nil
 }
 
-// Weekend fetches the weekend's forecast for a given spot.
+// Weekend fetches the weekend's forecast for a given spot ID.
 func (c *Client) Weekend(spot string) ([]Forecast, error) {
 	weekendFs := []Forecast{}
 	forecasts, err := c.Forecast(spot)
@@ -112,12 +123,23 @@ func (c *Client) getForecast(spotID string) ([]Forecast, error) {
 		return forecasts, err
 	}
 
-	err = json.Unmarshal(body, &forecasts)
-	if err != nil {
-		return forecasts, err
-	}
+	switch {
+	case strings.Contains(string(body), "error_response"):
+		var errResp APIError
+		err = json.Unmarshal(body, &errResp)
+		if err != nil {
+			return forecasts, err
+		}
 
-	return forecasts, nil
+		return forecasts, errors.New(errResp.ErrorResponse.ErrorMsg)
+	default:
+		err = json.Unmarshal(body, &forecasts)
+		if err != nil {
+			return forecasts, err
+		}
+
+		return forecasts, nil
+	}
 }
 
 func (c *Client) get(url string) ([]byte, error) {

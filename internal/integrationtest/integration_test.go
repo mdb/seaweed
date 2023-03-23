@@ -31,6 +31,19 @@ func TestForecast_Integration(t *testing.T) {
 	}
 }
 
+func TestForecast_Integration_error(t *testing.T) {
+	c := seaweed.NewClient("")
+	resp, err := c.Forecast("391")
+	expected := "Unable to authenticate request: Ensure your API key is passed correctly. Refer to the API docs."
+	if err.Error() != expected {
+		t.Errorf("expected Forecast to err with '%s'; got '%s'", expected, err.Error())
+	}
+
+	if len(resp) > 0 {
+		t.Error("erroring Forecast returned forecasts")
+	}
+}
+
 func TestToday_Integration(t *testing.T) {
 	resp, err := client.Today("391")
 	if err != nil {

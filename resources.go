@@ -2,6 +2,20 @@ package seaweed
 
 import "time"
 
+// APIError represents a Seaweed API error response body.
+//
+// Note that the Magic Seaweed API may respond with an HTTP status code of 200
+// and a response body reporting an error.
+type APIError struct {
+	ErrorResponse ErrorResponse `json:"error_response"`
+}
+
+// ErrorResponse represents a Seaweed API error response.
+type ErrorResponse struct {
+	Code     int    `json:"code"`
+	ErrorMsg string `json:"error_msg"`
+}
+
 // Forecast represents a Seaweed API forecast.
 type Forecast struct {
 	Timestamp      int64     `json:"timestamp"`
