@@ -49,13 +49,10 @@ func testServerAndClient(code int, body string) (*httptest.Server, *Client) {
 	}
 
 	httpClient := &http.Client{Transport: tr}
-	dur, _ := time.ParseDuration("0s")
 
 	client := &Client{
 		"fakeKey",
 		httpClient,
-		dur,
-		os.TempDir(),
 		NewLogger(logging.INFO),
 		testClock{},
 	}
@@ -65,16 +62,9 @@ func testServerAndClient(code int, body string) (*httptest.Server, *Client) {
 
 func TestNewClient(t *testing.T) {
 	client := NewClient("fakeKey")
-	age, _ := time.ParseDuration("5m")
 
 	if client.APIKey != "fakeKey" {
 		t.Error("NewClient should properly set the API key")
-	}
-	if client.CacheAge != age {
-		t.Error("NewClient should properly set the default 5m cache age")
-	}
-	if client.CacheDir != os.TempDir() {
-		t.Error("NewClient should properly set the default cache directory")
 	}
 }
 

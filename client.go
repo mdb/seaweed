@@ -2,7 +2,6 @@ package seaweed
 
 import (
 	"net/http"
-	"os"
 	"time"
 
 	logging "github.com/op/go-logging"
@@ -23,21 +22,15 @@ func (realClock) Now() time.Time {
 type Client struct {
 	APIKey     string
 	HTTPClient *http.Client
-	CacheAge   time.Duration
-	CacheDir   string
 	Log        *logging.Logger
 	clock      Clock
 }
 
 // NewClient takes an API key and returns a seaweed API client
 func NewClient(APIKey string) *Client {
-	dur, _ := time.ParseDuration("5m")
-
 	return &Client{
 		APIKey,
 		&http.Client{},
-		dur,
-		os.TempDir(),
 		NewLogger(logging.INFO),
 		realClock{},
 	}
@@ -91,8 +84,4 @@ func (c *Client) Weekend(spot string) ([]Forecast, error) {
 	}
 
 	return weekendFs, nil
-}
-
-func disableCache() bool {
-	return os.Getenv("SW_DISABLE_CACHE") != ""
 }
