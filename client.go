@@ -158,9 +158,10 @@ func (c *Client) get(url string) ([]byte, error) {
 		err = fmt.Errorf("%s returned HTTP status code %d", url, resp.StatusCode)
 	}
 
+	sanitizedURL := strings.Replace(url, c.APIKey, "<REDACTED>", 1)
 	l := c.Logger.WithFields(
 		logrus.Fields{
-			"url":         url,
+			"url":         sanitizedURL,
 			"http_status": resp.StatusCode,
 			"body":        string(body),
 		})
