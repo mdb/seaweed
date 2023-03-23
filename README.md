@@ -11,7 +11,6 @@ Example:
 ```go
 import (
   "github.com/mdb/seaweed"
-  "github.com/tonnerre/golang-pretty"
 )
 
 func main() {
@@ -21,7 +20,7 @@ func main() {
     panic(err)
   }
 
-  fmt.Printf("%# v", pretty.Formatter(resp))
+  fmt.Printf("%# v", resp)
 }
 ```
 

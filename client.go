@@ -136,7 +136,14 @@ func (c *Client) get(url string) ([]byte, error) {
 		err = fmt.Errorf("%s returned HTTP status code %d", url, resp.StatusCode)
 	}
 
-	c.Logger.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(body))
+	l := c.Logger.WithFields(
+		logrus.Fields{
+			"url":         url,
+			"http_status": resp.StatusCode,
+			"body":        string(body),
+		})
+
+	l.Debugf("Magic Seaweed API response")
 
 	return body, err
 }
