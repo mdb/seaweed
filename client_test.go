@@ -129,7 +129,6 @@ func TestForecast(t *testing.T) {
 			}
 
 			if test.expectError == nil && err == nil {
-
 				if forecasts[0].LocalTimestamp != test.expectLocalTimestamp {
 					t.Errorf("expected LocalTimestamp '%d'; got '%d'", test.expectLocalTimestamp, forecasts[0].LocalTimestamp)
 				}
