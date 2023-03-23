@@ -1,4 +1,4 @@
-SOURCE=./...
+SOURCE=./
 VERSION=0.5.0
 
 .DEFAULT_GOAL := test
