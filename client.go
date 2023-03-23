@@ -116,7 +116,7 @@ func (c *Client) Weekend(spot string) ([]Forecast, error) {
 }
 
 func (c *Client) getForecast(spotID string) ([]Forecast, error) {
-	url := fmt.Sprintf("https://magicseaweed.com/api/%s/forecast/?spot_id=%s", c.APIKey, spotID)
+	url := fmt.Sprintf("http://magicseaweed.com/api/%s/forecast/?spot_id=%s", c.APIKey, spotID)
 	forecasts := []Forecast{}
 	body, err := c.get(url)
 	if err != nil {
