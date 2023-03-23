@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	logging "github.com/op/go-logging"
+	"github.com/sirupsen/logrus"
 )
 
 // Clock is a clock interface used to report the current time.
@@ -27,7 +27,7 @@ func (RealClock) Now() time.Time {
 type Client struct {
 	APIKey     string
 	HTTPClient *http.Client
-	Log        *logging.Logger
+	Logger     *logrus.Logger
 	clock      Clock
 }
 
@@ -36,7 +36,7 @@ func NewClient(APIKey string) *Client {
 	return &Client{
 		APIKey,
 		&http.Client{},
-		NewLogger(logging.INFO),
+		logrus.New(),
 		RealClock{},
 	}
 }
@@ -136,7 +136,7 @@ func (c *Client) get(url string) ([]byte, error) {
 		err = fmt.Errorf("%s returned HTTP status code %d", url, resp.StatusCode)
 	}
 
-	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(body))
+	c.Logger.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(body))
 
 	return body, err
 }

@@ -31,7 +31,7 @@ Use a customized client:
 client := seaweed.Client{
   APIKey:     "YOUR_KEY",
   HTTPClient: &http.Client{}, // *http.Client
-  Log:        seaweed.NewLogger(logging.INFO), // *logging.Logger
+  Logger:     logrus.New(logging.INFO), // *logrus.Logger
 	clock:      seaweed.RealClock{}, // seaweed.Clock
 }
 ```

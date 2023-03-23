@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	logging "github.com/op/go-logging"
+	"github.com/sirupsen/logrus"
 )
 
 var resp string
@@ -53,7 +53,7 @@ func testServerAndClient(code int, body string) (*httptest.Server, *Client) {
 	client := &Client{
 		"fakeKey",
 		httpClient,
-		NewLogger(logging.INFO),
+		logrus.New(),
 		testClock{},
 	}
 
