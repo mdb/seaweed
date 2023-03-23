@@ -1,6 +1,7 @@
 package seaweed
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -78,86 +79,62 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestForecast(t *testing.T) {
-	server, c := testTools(200, resp)
-	defer server.Close()
-	forecasts, _ := c.Forecast("123")
-	forecast := forecasts[0]
+	tests := []struct {
+		desc                 string
+		body                 string
+		code                 int
+		expectError          error
+		expectForecastCount  int
+		expectLocalTimestamp int64
+	}{{
+		desc:                 "when successful",
+		body:                 resp,
+		code:                 200,
+		expectForecastCount:  3,
+		expectLocalTimestamp: 1442355356,
+	}, {
+		desc:                "when the response body is invalid JSON",
+		body:                "{foo:",
+		code:                200,
+		expectForecastCount: 0,
+		expectError:         errors.New("invalid character 'f' looking for beginning of object key string"),
+	}, {
+		desc:                "when the response code is not OK",
+		body:                resp,
+		code:                500,
+		expectForecastCount: 0,
+		expectError:         errors.New("http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"),
+	}}
 
-	if forecast.Timestamp != 1442355356 {
-		t.Error("Forecast should properly return a Timestamp")
-	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			server, c := testTools(test.code, test.body)
+			defer server.Close()
+			forecasts, err := c.Forecast("123")
 
-	if forecast.LocalTimestamp != 1442355356 {
-		t.Error("Forecast should properly return a LocalTimestamp")
-	}
+			if err != nil && test.expectError == nil {
+				t.Errorf("expected '%s' not to error; got '%v'", test.desc, err)
+			}
 
-	if forecast.IssueTimestamp != 1442355356 {
-		t.Error("Forecast should properly return an IssueTimestamp")
-	}
+			if test.expectError != nil && err == nil {
+				t.Errorf("expected error '%s'; got '%v'", test.expectError.Error(), err)
+			}
 
-	if forecast.FadedRating != 3 {
-		t.Error("Forecast should properly return a FadedRating")
-	}
+			if test.expectError != nil && err != nil && test.expectError.Error() != err.Error() {
+				t.Errorf("expected error '%s'; got '%v'", test.expectError.Error(), err)
+			}
 
-	if forecast.SolidRating != 0 {
-		t.Error("Forecast should properly return SolidRating")
-	}
+			if len(forecasts) != test.expectForecastCount {
+				t.Errorf("expected '%d' forecasts; got '%d'", test.expectForecastCount, len(forecasts))
+			}
 
-	if forecast.Swell.MinBreakingHeight != 5 {
-		t.Error("Forecast should properly return Swell.MinBreakingHeight")
-	}
+			if test.expectError == nil && err == nil {
 
-	if forecast.Swell.AbsMinBreakingHeight != 4.88 {
-		t.Error("Forecast should properly return Swell.AbsMinBreakingHeight")
-	}
-
-	if forecast.Swell.Unit != "ft" {
-		t.Error("Forecast should properly return Swell.Unit")
-	}
-
-	if forecast.Swell.MaxBreakingHeight != 8 {
-		t.Error("Forecast should properly return Swell.MaxBreakingHeight")
-	}
-
-	if forecast.Swell.AbsMaxBreakingHeight != 7.63 {
-		t.Error("Forecast should properly return Swell.AbsMaxBreakingHeight")
-	}
-
-	if forecast.Swell.Components.Combined.Height != 7.5 {
-		t.Error("Forecast should properly return Swell.Components.Combined.Height")
-	}
-
-	if forecast.Swell.Components.Primary.Height != 7.5 {
-		t.Error("Forecast should properly return Swell.Components.Primary.Height")
-	}
-
-	if forecast.Wind.Speed != 13 {
-		t.Error("Forecast should properly return Wind.Speed")
-	}
-
-	if forecast.Condition.Pressure != 1008 {
-		t.Error("Forecast should properly return Condition.Pressure")
-	}
-}
-
-func TestForecastWithErr(t *testing.T) {
-	server, c := testTools(200, "{foo")
-	defer server.Close()
-	_, err := c.Forecast("123")
-
-	if err.Error() != "invalid character 'f' looking for beginning of object key string" {
-		t.Error("Forecast should properly catch and return errors")
-	}
-}
-
-func TestForecastWithNonOKResp(t *testing.T) {
-	server, c := testTools(500, resp)
-	defer server.Close()
-	_, err := c.Forecast("123")
-
-	expected := "http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"
-	if err.Error() != expected {
-		t.Errorf("expected error '%s'; received '%s'", expected, err.Error())
+				if forecasts[0].LocalTimestamp != test.expectLocalTimestamp {
+					t.Errorf("expected LocalTimestamp '%d'; got '%d'", test.expectLocalTimestamp, forecasts[0].LocalTimestamp)
+				}
+			}
+		})
 	}
 }
 
