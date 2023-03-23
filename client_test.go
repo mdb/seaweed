@@ -1,10 +1,66 @@
 package seaweed
 
 import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"os"
 	"testing"
 	"time"
+
+	logging "github.com/op/go-logging"
 )
+
+var resp string
+
+func TestMain(m *testing.M) {
+	content, err := ioutil.ReadFile("testdata/response.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resp = string(content)
+
+	exitVal := m.Run()
+	os.Exit(exitVal)
+}
+
+type testClock struct{}
+
+func (testClock) Now() time.Time {
+	return time.Unix(1442355356, 0).UTC()
+}
+
+func testTools(code int, body string) (*httptest.Server, *Client) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(code)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, body)
+	}))
+
+	tr := &http.Transport{
+		Proxy: func(req *http.Request) (*url.URL, error) {
+			return url.Parse(server.URL)
+		},
+	}
+
+	httpClient := &http.Client{Transport: tr}
+	dur, _ := time.ParseDuration("0s")
+
+	client := &Client{
+		"fakeKey",
+		httpClient,
+		dur,
+		os.TempDir(),
+		NewLogger(logging.INFO),
+		testClock{},
+	}
+
+	return server, client
+}
 
 func TestNewClient(t *testing.T) {
 	client := NewClient("fakeKey")
@@ -18,5 +74,175 @@ func TestNewClient(t *testing.T) {
 	}
 	if client.CacheDir != os.TempDir() {
 		t.Error("NewClient should properly set the default cache directory")
+	}
+}
+
+func TestForecast(t *testing.T) {
+	server, c := testTools(200, resp)
+	defer server.Close()
+	forecasts, _ := c.Forecast("123")
+	forecast := forecasts[0]
+
+	if forecast.Timestamp != 1442355356 {
+		t.Error("Forecast should properly return a Timestamp")
+	}
+
+	if forecast.LocalTimestamp != 1442355356 {
+		t.Error("Forecast should properly return a LocalTimestamp")
+	}
+
+	if forecast.IssueTimestamp != 1442355356 {
+		t.Error("Forecast should properly return an IssueTimestamp")
+	}
+
+	if forecast.FadedRating != 3 {
+		t.Error("Forecast should properly return a FadedRating")
+	}
+
+	if forecast.SolidRating != 0 {
+		t.Error("Forecast should properly return SolidRating")
+	}
+
+	if forecast.Swell.MinBreakingHeight != 5 {
+		t.Error("Forecast should properly return Swell.MinBreakingHeight")
+	}
+
+	if forecast.Swell.AbsMinBreakingHeight != 4.88 {
+		t.Error("Forecast should properly return Swell.AbsMinBreakingHeight")
+	}
+
+	if forecast.Swell.Unit != "ft" {
+		t.Error("Forecast should properly return Swell.Unit")
+	}
+
+	if forecast.Swell.MaxBreakingHeight != 8 {
+		t.Error("Forecast should properly return Swell.MaxBreakingHeight")
+	}
+
+	if forecast.Swell.AbsMaxBreakingHeight != 7.63 {
+		t.Error("Forecast should properly return Swell.AbsMaxBreakingHeight")
+	}
+
+	if forecast.Swell.Components.Combined.Height != 7.5 {
+		t.Error("Forecast should properly return Swell.Components.Combined.Height")
+	}
+
+	if forecast.Swell.Components.Primary.Height != 7.5 {
+		t.Error("Forecast should properly return Swell.Components.Primary.Height")
+	}
+
+	if forecast.Wind.Speed != 13 {
+		t.Error("Forecast should properly return Wind.Speed")
+	}
+
+	if forecast.Condition.Pressure != 1008 {
+		t.Error("Forecast should properly return Condition.Pressure")
+	}
+}
+
+func TestForecastWithErr(t *testing.T) {
+	server, c := testTools(200, "{foo")
+	defer server.Close()
+	_, err := c.Forecast("123")
+
+	if err.Error() != "invalid character 'f' looking for beginning of object key string" {
+		t.Error("Forecast should properly catch and return errors")
+	}
+}
+
+func TestForecastWithNonOKResp(t *testing.T) {
+	server, c := testTools(500, resp)
+	defer server.Close()
+	_, err := c.Forecast("123")
+
+	expected := "http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"
+	if err.Error() != expected {
+		t.Errorf("expected error '%s'; received '%s'", expected, err.Error())
+	}
+}
+
+func TestWeekend(t *testing.T) {
+	server, c := testTools(200, resp)
+	defer server.Close()
+	forecasts, _ := c.Weekend("123")
+
+	if len(forecasts) > 1 {
+		t.Error("Weekend should only return Forecasts pertaining to Saturdays or Sundays")
+	}
+
+	forecast := forecasts[0]
+	if forecast.LocalTimestamp != 1677973254 {
+		t.Error("Weekend should return Forecasts pertaining to Saturdays or Sundays")
+	}
+}
+
+func TestWeekendWithNonOKResp(t *testing.T) {
+	server, c := testTools(500, resp)
+	defer server.Close()
+	_, err := c.Weekend("123")
+
+	expected := "http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"
+	if err.Error() != expected {
+		t.Errorf("expected error '%s'; received '%s'", expected, err.Error())
+	}
+}
+
+func TestToday(t *testing.T) {
+	server, c := testTools(200, resp)
+	defer server.Close()
+
+	forecasts, err := c.Today("123")
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	if len(forecasts) > 1 {
+		t.Error("Today should only return Forecasts whose timestamp match today")
+	}
+
+	forecast := forecasts[0]
+	if forecast.LocalTimestamp != 1442355356 {
+		t.Error("Today should return a Forecast whose timestamp matches today")
+	}
+}
+
+func TestTodayWithNonOKResp(t *testing.T) {
+	server, c := testTools(500, resp)
+	defer server.Close()
+	_, err := c.Today("123")
+
+	expected := "http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"
+	if err.Error() != expected {
+		t.Error(fmt.Sprintf("expected error '%s'; received '%s'", expected, err.Error()))
+	}
+}
+
+func TestTomorrow(t *testing.T) {
+	server, c := testTools(200, resp)
+	defer server.Close()
+
+	forecasts, err := c.Tomorrow("123")
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	if len(forecasts) > 1 {
+		t.Error("Today should only return Forecasts whose timestamp match tomorrow")
+	}
+
+	forecast := forecasts[0]
+	if forecast.LocalTimestamp != 1442441756 {
+		t.Error("Today should return a Forecast whose timestamp matches tomorrow")
+	}
+}
+
+func TestTomorrowWithNonOKResp(t *testing.T) {
+	server, c := testTools(500, resp)
+	defer server.Close()
+	_, err := c.Tomorrow("123")
+
+	expected := "http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"
+	if err.Error() != expected {
+		t.Errorf("expected error '%s'; received '%s'", expected, err.Error())
 	}
 }

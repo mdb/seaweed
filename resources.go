@@ -1,5 +1,7 @@
 package seaweed
 
+import "time"
+
 // Forecast represents a Seaweed API forecast.
 type Forecast struct {
 	Timestamp      int64     `json:"timestamp"`
@@ -10,6 +12,17 @@ type Forecast struct {
 	Swell          Swell     `json:"swell"`
 	Wind           Wind      `json:"wind"`
 	Condition      Condition `json:"condition"`
+}
+
+// IsWeekend returns true if a forecast pertains to a Saturday or a Sunday.
+func (f Forecast) IsWeekend() bool {
+	day := time.Unix(f.LocalTimestamp, 0).UTC().Weekday().String()
+
+	if day == "Saturday" || day == "Sunday" {
+		return true
+	}
+
+	return false
 }
 
 // Swell represents a Seaweed API forecast's swell.

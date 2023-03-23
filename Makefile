@@ -1,16 +1,21 @@
-all: test install
+SOURCE=./...
+VERSION=0.0.4
 
-fmt:
-	gofmt -s -w .
+.DEFAULT_GOAL := test
 
-test:
-	go vet
-	go test -cover
+test: vet test-fmt
+	go test -v -coverprofile=coverage.out -race $(SOURCE)
+.PHONY: test
 
-cover:
-	go test -coverprofile=coverage.out
-	go tool cover -html=coverage.out
-	rm coverage.out
+vet:
+	go vet $(SOURCE)
+.PHONY: vet
 
-install:
-	go install
+test-fmt:
+	test -z $(shell go fmt $(SOURCE))
+.PHONY: test-fmt
+
+trigger-release:
+	git tag v$(VERSION)
+	git push origin v$(VERSION)
+.PHONY: trigger-release

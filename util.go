@@ -1,7 +1,6 @@
 package seaweed
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,7 +11,8 @@ import (
 	"time"
 )
 
-func getForecast(c *Client, url string, responseStruct interface{}) error {
+func getForecast(c *Client, spotID string, responseStruct interface{}) error {
+	url := fmt.Sprintf("http://magicseaweed.com/api/%s/forecast/?spot_id=%s", c.APIKey, spotID)
 	file := cacheFile(url, c)
 	var err error
 	var body []byte
@@ -44,14 +44,8 @@ func getForecast(c *Client, url string, responseStruct interface{}) error {
 }
 
 func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, er error) {
-	req, err := http.NewRequest("GET", url, nil)
+	resp, err := c.HTTPClient.Get(url)
 	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		defer resp.Body.Close()
 		return nil, err
 	}
 
@@ -60,52 +54,25 @@ func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, 
 		return nil, err
 	}
 
-	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(bodyContents))
-
-	return bodyContents, nil
-}
-
-func concat(arr []string) string {
-	var buff bytes.Buffer
-
-	for _, elem := range arr {
-		buff.WriteString(elem)
+	if resp.StatusCode != http.StatusOK {
+		err = fmt.Errorf("%s returned HTTP status code %d", url, resp.StatusCode)
 	}
 
-	return buff.String()
+	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(bodyContents))
+
+	return bodyContents, err
 }
 
 func matchDays(f []Forecast, match int) []Forecast {
 	matched := []Forecast{}
 
 	for _, each := range f {
-		if time.Unix(each.LocalTimestamp, 0).Day() == match {
+		if time.Unix(each.LocalTimestamp, 0).UTC().Day() == match {
 			matched = append(matched, each)
 		}
 	}
 
 	return matched
-}
-
-func matchWeekendDays(f []Forecast) []Forecast {
-	matched := []Forecast{}
-
-	for _, each := range f {
-		if isWeekend(each) {
-			matched = append(matched, each)
-		}
-	}
-
-	return matched
-}
-
-func isWeekend(f Forecast) bool {
-	day := time.Unix(f.LocalTimestamp, 0).Weekday().String()
-
-	if day == "Saturday" || day == "Sunday" {
-		return true
-	}
-	return false
 }
 
 func cacheFile(url string, c *Client) string {
