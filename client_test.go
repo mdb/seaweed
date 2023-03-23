@@ -244,3 +244,62 @@ func TestToday(t *testing.T) {
 		})
 	}
 }
+
+func TestTomorrow(t *testing.T) {
+	tests := []struct {
+		desc                 string
+		body                 string
+		code                 int
+		expectError          error
+		expectForecastCount  int
+		expectLocalTimestamp int64
+	}{{
+		desc:                 "when successful",
+		body:                 resp,
+		code:                 200,
+		expectForecastCount:  1,
+		expectLocalTimestamp: 1442441756,
+	}, {
+		desc:                "when the response body is invalid JSON",
+		body:                "{foo:",
+		code:                200,
+		expectForecastCount: 0,
+		expectError:         errors.New("invalid character 'f' looking for beginning of object key string"),
+	}, {
+		desc:                "when the response code is not OK",
+		body:                resp,
+		code:                500,
+		expectForecastCount: 0,
+		expectError:         errors.New("http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"),
+	}}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			server, c := testServerAndClient(test.code, test.body)
+			defer server.Close()
+			forecasts, err := c.Tomorrow("123")
+
+			if err != nil && test.expectError == nil {
+				t.Errorf("expected '%s' not to error; got '%v'", test.desc, err)
+			}
+
+			if test.expectError != nil && err == nil {
+				t.Errorf("expected error '%s'; got '%v'", test.expectError.Error(), err)
+			}
+
+			if test.expectError != nil && err != nil && test.expectError.Error() != err.Error() {
+				t.Errorf("expected error '%s'; got '%v'", test.expectError.Error(), err)
+			}
+
+			if len(forecasts) != test.expectForecastCount {
+				t.Errorf("expected '%d' forecasts; got '%d'", test.expectForecastCount, len(forecasts))
+			}
+
+			if test.expectError == nil && err == nil {
+				if forecasts[0].LocalTimestamp != test.expectLocalTimestamp {
+					t.Errorf("expected LocalTimestamp '%d'; got '%d'", test.expectLocalTimestamp, forecasts[0].LocalTimestamp)
+				}
+			}
+		})
+	}
+}
