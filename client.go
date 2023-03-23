@@ -12,9 +12,11 @@ type Clock interface {
 	Now() time.Time
 }
 
-type realClock struct{}
+// RealClock implements a Clock.
+type RealClock struct{}
 
-func (realClock) Now() time.Time {
+// Now returns the current time.Time.
+func (RealClock) Now() time.Time {
 	return time.Now()
 }
 
@@ -32,7 +34,7 @@ func NewClient(APIKey string) *Client {
 		APIKey,
 		&http.Client{},
 		NewLogger(logging.INFO),
-		realClock{},
+		RealClock{},
 	}
 }
 

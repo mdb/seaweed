@@ -29,9 +29,10 @@ Use a customized client:
 
 ```go
 client := seaweed.Client{
-  APIKey:     string,
-  HttpClient: *http.Client,
-  Log:        *logging.Logger, // override NewLogger(logging.INFO)
+  APIKey:     "YOUR_KEY",
+  HTTPClient: &http.Client{}, // *http.Client
+  Log:        seaweed.NewLogger(logging.INFO), // *logging.Logger
+	clock:      seaweed.RealClock{}, // seaweed.Clock
 }
 ```
 
@@ -53,6 +54,6 @@ resp, err := client.Today("<SOME_SPOT_ID>")
 // Tomorrow's forecast
 resp, err := client.Tomorrow("<SOME_SPOT_ID>")
 
-// Weekend forecast
+// This weekend's forecast
 resp, err := client.Weekend("<SOME_SPOT_ID>")
 ```
