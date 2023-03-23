@@ -126,7 +126,7 @@ func (c *Client) get(url string) ([]byte, error) {
 		return nil, err
 	}
 
-	bodyContents, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +135,7 @@ func (c *Client) get(url string) ([]byte, error) {
 		err = fmt.Errorf("%s returned HTTP status code %d", url, resp.StatusCode)
 	}
 
-	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(bodyContents))
+	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(body))
 
-	return bodyContents, err
+	return body, err
 }
