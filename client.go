@@ -51,24 +51,38 @@ func (c *Client) Forecast(spot string) ([]Forecast, error) {
 
 // Today fetches the today's forecast for a given spot.
 func (c *Client) Today(spot string) ([]Forecast, error) {
-	today := c.clock.Now().UTC().Day()
+	today := []Forecast{}
+	now := c.clock.Now().UTC()
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
-		return []Forecast{}, err
+		return today, err
 	}
 
-	return matchDays(forecasts, today), nil
+	for _, each := range forecasts {
+		if each.IsDay(now) {
+			today = append(today, each)
+		}
+	}
+
+	return today, nil
 }
 
 // Tomorrow fetches tomorrow's forecast for a given spot.
 func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
-	tomorrowDate := c.clock.Now().UTC().Day() + 1
+	tomorrow := []Forecast{}
+	tomorrowD := c.clock.Now().UTC().AddDate(0, 0, 1)
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
-		return []Forecast{}, err
+		return tomorrow, err
 	}
 
-	return matchDays(forecasts, tomorrowDate), nil
+	for _, each := range forecasts {
+		if each.IsDay(tomorrowD) {
+			tomorrow = append(tomorrow, each)
+		}
+	}
+
+	return tomorrow, nil
 }
 
 // Weekend fetches the weekend's forecast for a given spot.

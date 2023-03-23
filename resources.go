@@ -25,6 +25,13 @@ func (f Forecast) IsWeekend() bool {
 	return false
 }
 
+// IsDay returns true if a forecast pertains to the day it's passed.
+func (f Forecast) IsDay(t time.Time) bool {
+	day := time.Unix(f.LocalTimestamp, 0).UTC()
+
+	return day.Day() == t.Day() && day.Month() == t.Month() && day.Year() == t.Year()
+}
+
 // Swell represents a Seaweed API forecast's swell.
 type Swell struct {
 	MinBreakingHeight    int        `json:"minBreakingHeight"`

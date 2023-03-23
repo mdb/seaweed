@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 func getForecast(c *Client, spotID string, responseStruct interface{}) error {
@@ -41,16 +40,4 @@ func doRequest(c *Client, url string, responseStruct interface{}) (json []byte, 
 	c.Log.Debugf("url=%s http_status=%d response_body=%s", url, resp.StatusCode, string(bodyContents))
 
 	return bodyContents, err
-}
-
-func matchDays(f []Forecast, match int) []Forecast {
-	matched := []Forecast{}
-
-	for _, each := range f {
-		if time.Unix(each.LocalTimestamp, 0).UTC().Day() == match {
-			matched = append(matched, each)
-		}
-	}
-
-	return matched
 }
