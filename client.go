@@ -1,11 +1,13 @@
 package seaweed
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
-	logging "github.com/op/go-logging"
+	"github.com/sirupsen/logrus"
 )
 
 // Clock is a clock interface used to report the current time.
@@ -13,9 +15,11 @@ type Clock interface {
 	Now() time.Time
 }
 
-type realClock struct{}
+// RealClock implements a Clock.
+type RealClock struct{}
 
-func (realClock) Now() time.Time {
+// Now returns the current time.Time.
+func (RealClock) Now() time.Time {
 	return time.Now()
 }
 
@@ -23,30 +27,23 @@ func (realClock) Now() time.Time {
 type Client struct {
 	APIKey     string
 	HTTPClient *http.Client
-	CacheAge   time.Duration
-	CacheDir   string
-	Log        *logging.Logger
+	Logger     *logrus.Logger
 	clock      Clock
 }
 
 // NewClient takes an API key and returns a seaweed API client
 func NewClient(APIKey string) *Client {
-	dur, _ := time.ParseDuration("5m")
-
 	return &Client{
 		APIKey,
 		&http.Client{},
-		dur,
-		os.TempDir(),
-		NewLogger(logging.INFO),
-		realClock{},
+		logrus.New(),
+		RealClock{},
 	}
 }
 
 // Forecast fetches the full, multi-day forecast for a given spot.
 func (c *Client) Forecast(spot string) ([]Forecast, error) {
-	forecasts := []Forecast{}
-	err := getForecast(c, spot, &forecasts)
+	forecasts, err := c.getForecast(spot)
 	if err != nil {
 		return forecasts, err
 	}
@@ -56,24 +53,38 @@ func (c *Client) Forecast(spot string) ([]Forecast, error) {
 
 // Today fetches the today's forecast for a given spot.
 func (c *Client) Today(spot string) ([]Forecast, error) {
-	today := c.clock.Now().UTC().Day()
+	today := []Forecast{}
+	now := c.clock.Now().UTC()
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
-		return []Forecast{}, err
+		return today, err
 	}
 
-	return matchDays(forecasts, today), nil
+	for _, each := range forecasts {
+		if each.IsDay(now) {
+			today = append(today, each)
+		}
+	}
+
+	return today, nil
 }
 
 // Tomorrow fetches tomorrow's forecast for a given spot.
 func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
-	tomorrowDate := c.clock.Now().UTC().Day() + 1
+	tomorrow := []Forecast{}
+	tomorrowD := c.clock.Now().UTC().AddDate(0, 0, 1)
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
-		return []Forecast{}, err
+		return tomorrow, err
 	}
 
-	return matchDays(forecasts, tomorrowDate), nil
+	for _, each := range forecasts {
+		if each.IsDay(tomorrowD) {
+			tomorrow = append(tomorrow, each)
+		}
+	}
+
+	return tomorrow, nil
 }
 
 // Weekend fetches the weekend's forecast for a given spot.
@@ -93,6 +104,46 @@ func (c *Client) Weekend(spot string) ([]Forecast, error) {
 	return weekendFs, nil
 }
 
-func disableCache() bool {
-	return os.Getenv("SW_DISABLE_CACHE") != ""
+func (c *Client) getForecast(spotID string) ([]Forecast, error) {
+	url := fmt.Sprintf("http://magicseaweed.com/api/%s/forecast/?spot_id=%s", c.APIKey, spotID)
+	forecasts := []Forecast{}
+	body, err := c.get(url)
+	if err != nil {
+		return forecasts, err
+	}
+
+	err = json.Unmarshal(body, &forecasts)
+	if err != nil {
+		return forecasts, err
+	}
+
+	return forecasts, nil
+}
+
+func (c *Client) get(url string) ([]byte, error) {
+	resp, err := c.HTTPClient.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		err = fmt.Errorf("%s returned HTTP status code %d", url, resp.StatusCode)
+	}
+
+	l := c.Logger.WithFields(
+		logrus.Fields{
+			"url":         url,
+			"http_status": resp.StatusCode,
+			"body":        string(body),
+		})
+
+	l.Debugf("Magic Seaweed API response")
+
+	return body, err
 }

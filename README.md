@@ -11,7 +11,6 @@ Example:
 ```go
 import (
   "github.com/mdb/seaweed"
-  "github.com/tonnerre/golang-pretty"
 )
 
 func main() {
@@ -21,7 +20,7 @@ func main() {
     panic(err)
   }
 
-  fmt.Printf("%# v", pretty.Formatter(resp))
+  fmt.Printf("%# v", resp)
 }
 ```
 
@@ -29,11 +28,10 @@ Use a customized client:
 
 ```go
 client := seaweed.Client{
-  APIKey:     string,
-  HttpClient: *http.Client,
-  CacheAge:   time.Duration, // override 5m default
-  CacheDir:   string, // override os.TempDir() value
-  Log:        *logging.Logger, // override NewLogger(logging.INFO)
+  APIKey:     "YOUR_KEY",
+  HTTPClient: &http.Client{}, // *http.Client
+  Logger:     logrus.New(logging.INFO), // *logrus.Logger
+	clock:      seaweed.RealClock{}, // seaweed.Clock
 }
 ```
 
@@ -55,14 +53,6 @@ resp, err := client.Today("<SOME_SPOT_ID>")
 // Tomorrow's forecast
 resp, err := client.Tomorrow("<SOME_SPOT_ID>")
 
-// Weekend forecast
+// This weekend's forecast
 resp, err := client.Weekend("<SOME_SPOT_ID>")
-```
-
-## Options
-
-To disable response caching, set a `SW_DISABLE_CACHE` env var:
-
-```
-SW_DISABLE_CACHE=true
 ```
