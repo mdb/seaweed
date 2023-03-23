@@ -154,11 +154,12 @@ func (c *Client) get(url string) ([]byte, error) {
 		return nil, err
 	}
 
+	sanitizedURL := strings.Replace(url, c.APIKey, "<REDACTED>", 1)
+
 	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf("%s returned HTTP status code %d", url, resp.StatusCode)
+		err = fmt.Errorf("%s returned HTTP status code %d", sanitizedURL, resp.StatusCode)
 	}
 
-	sanitizedURL := strings.Replace(url, c.APIKey, "<REDACTED>", 1)
 	l := c.Logger.WithFields(
 		logrus.Fields{
 			"url":         sanitizedURL,
