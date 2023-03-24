@@ -1,4 +1,4 @@
-[![CI](https://github.com/mdb/seaweed/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/mdb/seaweed/actions/workflows/ci.yaml)
+[![CI](https://github.com/mdb/seaweed/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/mdb/seaweed/actions/workflows/ci.yaml) [![PkgGoDev](https://pkg.go.dev/badge/github.com/mdb/seaweed)](https://pkg.go.dev/github.com/mdb/seaweed)
 
 # seaweed
 
