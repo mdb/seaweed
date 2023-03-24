@@ -1,3 +1,4 @@
+// Package seaweed provides a Magic Seaweed API client.
 package seaweed
 
 import (
@@ -12,8 +13,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Clock is a clock interface used to report the current time.
-// It exists largely to test the Client#Tomorrow method.
+// Clock is a clock interface used to report the current time such that the
+// Client#Today and Client#Tomorrow methods can return the proper forecasts
+// relative to the current time.
+// It exists largely for testing purposes.
 type Clock interface {
 	Now() time.Time
 }
@@ -28,11 +31,18 @@ func (RealClock) Now() time.Time {
 
 // Client represents a seaweed API client
 type Client struct {
-	BaseURL    string
-	APIKey     string
+	// BaseURL is the targeted Magic Seaweed API base URL, such as https://magicseaweed.com.
+	BaseURL string
+	// APIKey is a Magic Seaweed API key.
+	APIKey string
+	// HTTPClient is a *http.Client.
 	HTTPClient *http.Client
-	Logger     *logrus.Logger
-	clock      Clock
+	// Logger is a *logrus.Logger.
+	Logger *logrus.Logger
+	// clock is a seaweed.Clock used to report the current time/date such that the
+	// Client#Tomorrow and Client#Today methods can return the proper forecasts
+	// relative to the current time.
+	clock Clock
 }
 
 // NewClient takes an API key and returns a seaweed API client
