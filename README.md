@@ -30,9 +30,9 @@ Use a customized client:
 client := seaweed.Client{
   BaseURL:    "https://magicseaweed.com",
   APIKey:     "YOUR_KEY",
-  HTTPClient: &http.Client{},           // *http.Client
-  Logger:     logrus.New(logging.INFO), // *logrus.Logger
-  clock:      seaweed.RealClock{},      // seaweed.Clock
+  HTTPClient: &http.Client{},      // *http.Client
+  Logger:     logrus.New(),        // *logrus.Logger
+  clock:      seaweed.RealClock{}, // seaweed.Clock
 }
 ```
 
