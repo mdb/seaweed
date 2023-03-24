@@ -1,0 +1,6 @@
+{
+  "error_response": {
+    "code": 115,
+    "error_msg": "Unable to authenticate request: Ensure your API key is passed correctly. Refer to the API docs."
+  }
+}

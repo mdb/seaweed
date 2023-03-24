@@ -15,7 +15,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var resp string
+var (
+	resp      string
+	errorResp string
+)
 
 func TestMain(m *testing.M) {
 	content, err := ioutil.ReadFile("testdata/response.json")
@@ -24,6 +27,13 @@ func TestMain(m *testing.M) {
 	}
 
 	resp = string(content)
+
+	errContent, err := ioutil.ReadFile("testdata/error.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	errorResp = string(errContent)
 
 	exitVal := m.Run()
 	os.Exit(exitVal)
@@ -51,6 +61,7 @@ func testServerAndClient(code int, body string) (*httptest.Server, *Client) {
 	httpClient := &http.Client{Transport: tr}
 
 	client := &Client{
+		server.URL,
 		"fakeKey",
 		httpClient,
 		logrus.New(),
@@ -93,11 +104,27 @@ func TestForecast(t *testing.T) {
 		body:                resp,
 		code:                500,
 		expectForecastCount: 0,
-		expectError:         errors.New("http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"),
+		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
+	}, {
+		desc:                "when the response code is OK but the response body specifies an error",
+		body:                errorResp,
+		code:                200,
+		expectForecastCount: 0,
+		expectError:         errors.New("Unable to authenticate request: Ensure your API key is passed correctly. Refer to the API docs."),
+	}, {
+		desc:                "when the response code is OK and the response body indicates an error, but with unexpected JSON",
+		body:                "error_response{",
+		code:                200,
+		expectForecastCount: 0,
+		expectError:         errors.New("invalid character 'e' looking for beginning of value"),
 	}}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
+
 		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
 			server, c := testServerAndClient(test.code, test.body)
 			defer server.Close()
 			forecasts, err := c.Forecast("123")
@@ -152,11 +179,15 @@ func TestWeekend(t *testing.T) {
 		body:                resp,
 		code:                500,
 		expectForecastCount: 0,
-		expectError:         errors.New("http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"),
+		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
+
 		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
 			server, c := testServerAndClient(test.code, test.body)
 			defer server.Close()
 			forecasts, err := c.Weekend("123")
@@ -211,11 +242,15 @@ func TestToday(t *testing.T) {
 		body:                resp,
 		code:                500,
 		expectForecastCount: 0,
-		expectError:         errors.New("http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"),
+		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
+
 		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
 			server, c := testServerAndClient(test.code, test.body)
 			defer server.Close()
 			forecasts, err := c.Today("123")
@@ -270,11 +305,15 @@ func TestTomorrow(t *testing.T) {
 		body:                resp,
 		code:                500,
 		expectForecastCount: 0,
-		expectError:         errors.New("http://magicseaweed.com/api/fakeKey/forecast/?spot_id=123 returned HTTP status code 500"),
+		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
+
 		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
 			server, c := testServerAndClient(test.code, test.body)
 			defer server.Close()
 			forecasts, err := c.Tomorrow("123")

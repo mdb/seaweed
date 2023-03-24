@@ -1,11 +1,15 @@
-SOURCE=./...
-VERSION=0.5.0
+SOURCE=./
+VERSION=0.6.0
 
 .DEFAULT_GOAL := test
 
 test: vet test-fmt
 	go test -v -coverprofile=coverage.out -race $(SOURCE)
 .PHONY: test
+
+int-test: vet test-fmt
+	go test -v -race ./internal/integrationtest
+.PHONY: int-test
 
 vet:
 	go vet $(SOURCE)

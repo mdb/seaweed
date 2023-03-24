@@ -1,4 +1,4 @@
-[![CI](https://github.com/mdb/seaweed/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/mdb/seaweed/actions/workflows/ci.yaml)
+[![CI](https://github.com/mdb/seaweed/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/mdb/seaweed/actions/workflows/ci.yaml) [![PkgGoDev](https://pkg.go.dev/badge/github.com/mdb/seaweed)](https://pkg.go.dev/github.com/mdb/seaweed) [![Go Report Card](https://goreportcard.com/badge/github.com/mdb/seaweed)](https://goreportcard.com/report/github.com/mdb/seaweed)
 
 # seaweed
 
@@ -28,6 +28,7 @@ Use a customized client:
 
 ```go
 client := seaweed.Client{
+  BaseURL:    "https://magicseaweed.com",
   APIKey:     "YOUR_KEY",
   HTTPClient: &http.Client{},           // *http.Client
   Logger:     logrus.New(logging.INFO), // *logrus.Logger
