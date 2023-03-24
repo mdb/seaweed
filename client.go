@@ -31,12 +31,12 @@ func (RealClock) Now() time.Time {
 
 // Client represents a seaweed API client
 type Client struct {
-	// BaseURL is the targeted Magic Seaweed API base URL, such as https://magicseaweed.com.
-	BaseURL string
-	// APIKey is a Magic Seaweed API key.
-	APIKey string
-	// HTTPClient is a *http.Client.
-	HTTPClient *http.Client
+	// baseURL is the targeted Magic Seaweed API base URL, such as https://magicseaweed.com.
+	baseURL string
+	// apiKey is a Magic Seaweed API key.
+	apiKey string
+	// httpClient is a *http.Client.
+	httpClient *http.Client
 	// Logger is a *logrus.Logger.
 	Logger *logrus.Logger
 	// clock is a seaweed.Clock used to report the current time/date such that the
@@ -45,15 +45,51 @@ type Client struct {
 	clock Clock
 }
 
+// ClientOption configures one or more Client fields.
+type ClientOption = func(c *Client)
+
+// WithBaseURL is a ClientOption to configure a *Client's baseURL.
+func WithBaseURL(u string) ClientOption {
+	return func(c *Client) {
+		c.baseURL = u
+	}
+}
+
+// WithHTTPClient is a ClientOption to configure a *Client's httpClient.
+func WithHTTPClient(httpClient *http.Client) ClientOption {
+	return func(c *Client) {
+		c.httpClient = httpClient
+	}
+}
+
+// WithLogger is a ClientOption to configure a *Client's logger.
+func WithLogger(l *logrus.Logger) ClientOption {
+	return func(c *Client) {
+		c.Logger = l
+	}
+}
+
+func WithClock(clock Clock) ClientOption {
+	return func(c *Client) {
+		c.clock = clock
+	}
+}
+
 // NewClient takes an API key and returns a seaweed API client
-func NewClient(APIKey string) *Client {
-	return &Client{
+func NewClient(apiKey string, opts ...ClientOption) *Client {
+	c := &Client{
 		"https://magicseaweed.com",
-		APIKey,
+		apiKey,
 		&http.Client{},
 		logrus.New(),
 		RealClock{},
 	}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+
+	return c
 }
 
 // Forecast fetches the full, multi-day forecast for a given spot ID.
@@ -128,7 +164,7 @@ func (c *Client) Weekend(spot string) ([]Forecast, error) {
 }
 
 func (c *Client) getForecast(spotID string) ([]Forecast, error) {
-	url := fmt.Sprintf("%s/api/%s/forecast/?spot_id=%s", c.BaseURL, c.APIKey, spotID)
+	url := fmt.Sprintf("%s/api/%s/forecast/?spot_id=%s", c.baseURL, c.apiKey, spotID)
 	forecasts := []Forecast{}
 	body, err := c.get(url)
 	if err != nil {
@@ -155,7 +191,7 @@ func (c *Client) getForecast(spotID string) ([]Forecast, error) {
 }
 
 func (c *Client) get(url string) ([]byte, error) {
-	resp, err := c.HTTPClient.Get(url)
+	resp, err := c.httpClient.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -166,8 +202,8 @@ func (c *Client) get(url string) ([]byte, error) {
 		return nil, err
 	}
 
-	sanitizedURL := strings.Replace(url, c.APIKey, "<REDACTED>", 1)
-	sanitizedURL = strings.Replace(sanitizedURL, c.BaseURL, "", 1)
+	sanitizedURL := strings.Replace(url, c.apiKey, "<REDACTED>", 1)
+	sanitizedURL = strings.Replace(sanitizedURL, c.baseURL, "", 1)
 
 	if resp.StatusCode != http.StatusOK {
 		err = fmt.Errorf("GET %s returned HTTP status code %d", sanitizedURL, resp.StatusCode)

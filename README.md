@@ -6,7 +6,7 @@ A thin, Go [Magic Seaweed API](http://magicseaweed.com/developer/forecast-api) c
 
 ## Usage
 
-Example:
+Basic usage:
 
 ```go
 import (
@@ -27,13 +27,19 @@ func main() {
 Use a customized client:
 
 ```go
-client := seaweed.Client{
-  BaseURL:    "https://magicseaweed.com",
-  APIKey:     "YOUR_KEY",
-  HTTPClient: &http.Client{},      // *http.Client
-  Logger:     logrus.New(),        // *logrus.Logger
-  clock:      seaweed.RealClock{}, // seaweed.Clock
-}
+client := seaweed.NewClient(
+  "<YOUR_API_KEY>",
+  seaweed.WithBaseURL("https://foo.com"),
+  seaweed.WithHTTPClient(&http.Client{}), // *http.Client
+  seaweed.WithLogger(logrus.New()),       // *logrus.Logger
+  seaweed.WithClock(seaweed.RealClock{}), // seaweed.Clock
+)
+```
+
+To adjust the `*seaweed.Client`'s log level:
+
+```go
+client.Logger.SetLevel(logrus.DebugLevel)
 ```
 
 Client methods:
