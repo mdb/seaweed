@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 
@@ -60,13 +61,12 @@ func testServerAndClient(code int, body string) (*httptest.Server, *Client) {
 
 	httpClient := &http.Client{Transport: tr}
 
-	client := &Client{
-		server.URL,
+	client := NewClient(
 		"fakeKey",
-		httpClient,
-		logrus.New(),
-		testClock{},
-	}
+		WithBaseURL(server.URL),
+		WithHTTPClient(httpClient),
+		WithClock(testClock{}),
+	)
 
 	return server, client
 }
@@ -74,8 +74,8 @@ func testServerAndClient(code int, body string) (*httptest.Server, *Client) {
 func TestNewClient(t *testing.T) {
 	client := NewClient("fakeKey")
 
-	if client.APIKey != "fakeKey" {
-		t.Error("NewClient should properly set the API key")
+	if reflect.TypeOf(client.Logger) != reflect.TypeOf(&logrus.Logger{}) {
+		t.Error("NewClient should properly set the Logger")
 	}
 }
 
