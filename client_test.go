@@ -119,8 +119,12 @@ func TestForecast(t *testing.T) {
 		expectError:         errors.New("invalid character 'e' looking for beginning of value"),
 	}}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
+
 		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
 			server, c := testServerAndClient(test.code, test.body)
 			defer server.Close()
 			forecasts, err := c.Forecast("123")
@@ -178,8 +182,12 @@ func TestWeekend(t *testing.T) {
 		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
+
 		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
 			server, c := testServerAndClient(test.code, test.body)
 			defer server.Close()
 			forecasts, err := c.Weekend("123")
@@ -237,8 +245,12 @@ func TestToday(t *testing.T) {
 		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
+
 		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
 			server, c := testServerAndClient(test.code, test.body)
 			defer server.Close()
 			forecasts, err := c.Today("123")
@@ -296,8 +308,12 @@ func TestTomorrow(t *testing.T) {
 		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}}
 
-	for _, test := range tests {
+	for i := range tests {
+		test := tests[i]
+
 		t.Run(test.desc, func(t *testing.T) {
+			t.Parallel()
+
 			server, c := testServerAndClient(test.code, test.body)
 			defer server.Close()
 			forecasts, err := c.Tomorrow("123")
