@@ -61,6 +61,7 @@ func testServerAndClient(code int, body string) (*httptest.Server, *Client) {
 	httpClient := &http.Client{Transport: tr}
 
 	client := &Client{
+		server.URL,
 		"fakeKey",
 		httpClient,
 		logrus.New(),
@@ -103,7 +104,7 @@ func TestForecast(t *testing.T) {
 		body:                resp,
 		code:                500,
 		expectForecastCount: 0,
-		expectError:         errors.New("http://magicseaweed.com/api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
+		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}, {
 		desc:                "when the response code is OK but the response body specifies an error",
 		body:                errorResp,
@@ -174,7 +175,7 @@ func TestWeekend(t *testing.T) {
 		body:                resp,
 		code:                500,
 		expectForecastCount: 0,
-		expectError:         errors.New("http://magicseaweed.com/api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
+		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}}
 
 	for _, test := range tests {
@@ -233,7 +234,7 @@ func TestToday(t *testing.T) {
 		body:                resp,
 		code:                500,
 		expectForecastCount: 0,
-		expectError:         errors.New("http://magicseaweed.com/api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
+		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}}
 
 	for _, test := range tests {
@@ -292,7 +293,7 @@ func TestTomorrow(t *testing.T) {
 		body:                resp,
 		code:                500,
 		expectForecastCount: 0,
-		expectError:         errors.New("http://magicseaweed.com/api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
+		expectError:         errors.New("GET /api/<REDACTED>/forecast/?spot_id=123 returned HTTP status code 500"),
 	}}
 
 	for _, test := range tests {

@@ -28,6 +28,7 @@ func (RealClock) Now() time.Time {
 
 // Client represents a seaweed API client
 type Client struct {
+	BaseURL    string
 	APIKey     string
 	HTTPClient *http.Client
 	Logger     *logrus.Logger
@@ -37,6 +38,7 @@ type Client struct {
 // NewClient takes an API key and returns a seaweed API client
 func NewClient(APIKey string) *Client {
 	return &Client{
+		"https://magicseaweed.com",
 		APIKey,
 		&http.Client{},
 		logrus.New(),
@@ -116,7 +118,7 @@ func (c *Client) Weekend(spot string) ([]Forecast, error) {
 }
 
 func (c *Client) getForecast(spotID string) ([]Forecast, error) {
-	url := fmt.Sprintf("http://magicseaweed.com/api/%s/forecast/?spot_id=%s", c.APIKey, spotID)
+	url := fmt.Sprintf("%s/api/%s/forecast/?spot_id=%s", c.BaseURL, c.APIKey, spotID)
 	forecasts := []Forecast{}
 	body, err := c.get(url)
 	if err != nil {
@@ -155,9 +157,10 @@ func (c *Client) get(url string) ([]byte, error) {
 	}
 
 	sanitizedURL := strings.Replace(url, c.APIKey, "<REDACTED>", 1)
+	sanitizedURL = strings.Replace(sanitizedURL, c.BaseURL, "", 1)
 
 	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf("%s returned HTTP status code %d", sanitizedURL, resp.StatusCode)
+		err = fmt.Errorf("GET %s returned HTTP status code %d", sanitizedURL, resp.StatusCode)
 	}
 
 	l := c.Logger.WithFields(

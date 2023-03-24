@@ -28,6 +28,7 @@ Use a customized client:
 
 ```go
 client := seaweed.Client{
+  BaseURL:    "https://magicseaweed.com",
   APIKey:     "YOUR_KEY",
   HTTPClient: &http.Client{},           // *http.Client
   Logger:     logrus.New(logging.INFO), // *logrus.Logger
