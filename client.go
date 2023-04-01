@@ -112,7 +112,7 @@ func (c *Client) Forecast(spot string) ([]Forecast, error) {
 
 // Today fetches the today's forecast for a given spot ID.
 func (c *Client) Today(spot string) ([]Forecast, error) {
-	today := []Forecast{}
+	var today []Forecast
 	now := c.clock.Now().UTC()
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
@@ -130,7 +130,7 @@ func (c *Client) Today(spot string) ([]Forecast, error) {
 
 // Tomorrow fetches tomorrow's forecast for a given spot ID.
 func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
-	tomorrow := []Forecast{}
+	var tomorrow []Forecast
 	tomorrowD := c.clock.Now().UTC().AddDate(0, 0, 1)
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
@@ -148,7 +148,7 @@ func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
 
 // Weekend fetches the weekend's forecast for a given spot ID.
 func (c *Client) Weekend(spot string) ([]Forecast, error) {
-	weekendFs := []Forecast{}
+	var weekendFs []Forecast
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
 		return weekendFs, err
