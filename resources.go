@@ -52,6 +52,7 @@ type Swell struct {
 	AbsMinBreakingHeight float64    `json:"absMinBreakingHeight"`
 	MaxBreakingHeight    int        `json:"maxBreakingHeight"`
 	AbsMaxBreakingHeight float64    `json:"absMaxBreakingHeight"`
+	Probability          int        `json:"probability"`
 	Unit                 string     `json:"unit"`
 	Components           Components `json:"components"`
 }
