@@ -26,6 +26,7 @@ type Forecast struct {
 	Swell          Swell     `json:"swell"`
 	Wind           Wind      `json:"wind"`
 	Condition      Condition `json:"condition"`
+	Charts         Charts    `json:"charts"`
 }
 
 // IsWeekend returns true if a forecast pertains to a Saturday or a Sunday.
@@ -90,4 +91,12 @@ type Condition struct {
 	Weather      string `json:"weather"`
 	Unit         string `json:"unit"`
 	UnitPressure string `json:"unitPressure"`
+}
+
+// Charts represents a Seaweed API forecast's charts.
+type Charts struct {
+	Swell    string `json:"swell"`
+	Period   string `json:"period"`
+	Wind     string `json:"wind"`
+	Pressure string `json:"pressure"`
 }
