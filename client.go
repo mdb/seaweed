@@ -176,14 +176,14 @@ func (c *Client) getForecast(spotID string) ([]Forecast, error) {
 		var errResp APIError
 		err = json.Unmarshal(body, &errResp)
 		if err != nil {
-			return forecasts, err
+			return forecasts, fmt.Errorf("unexpected API response '%s': %w", body, err)
 		}
 
 		return forecasts, errors.New(errResp.ErrorResponse.ErrorMsg)
 	default:
 		err = json.Unmarshal(body, &forecasts)
 		if err != nil {
-			return forecasts, err
+			return forecasts, fmt.Errorf("unexpected API response '%s': %w", body, err)
 		}
 
 		return forecasts, nil

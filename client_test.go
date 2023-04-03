@@ -98,7 +98,7 @@ func TestForecast(t *testing.T) {
 		body:                "{foo:",
 		code:                200,
 		expectForecastCount: 0,
-		expectError:         errors.New("invalid character 'f' looking for beginning of object key string"),
+		expectError:         errors.New("unexpected API response '{foo:': invalid character 'f' looking for beginning of object key string"),
 	}, {
 		desc:                "when the response code is not OK",
 		body:                resp,
@@ -116,7 +116,7 @@ func TestForecast(t *testing.T) {
 		body:                "error_response{",
 		code:                200,
 		expectForecastCount: 0,
-		expectError:         errors.New("invalid character 'e' looking for beginning of value"),
+		expectError:         errors.New("unexpected API response 'error_response{': invalid character 'e' looking for beginning of value"),
 	}}
 
 	for i := range tests {
@@ -173,7 +173,7 @@ func TestWeekend(t *testing.T) {
 		body:                "{foo:",
 		code:                200,
 		expectForecastCount: 0,
-		expectError:         errors.New("invalid character 'f' looking for beginning of object key string"),
+		expectError:         errors.New("unexpected API response '{foo:': invalid character 'f' looking for beginning of object key string"),
 	}, {
 		desc:                "when the response code is not OK",
 		body:                resp,
@@ -236,7 +236,7 @@ func TestToday(t *testing.T) {
 		body:                "{foo:",
 		code:                200,
 		expectForecastCount: 0,
-		expectError:         errors.New("invalid character 'f' looking for beginning of object key string"),
+		expectError:         errors.New("unexpected API response '{foo:': invalid character 'f' looking for beginning of object key string"),
 	}, {
 		desc:                "when the response code is not OK",
 		body:                resp,
@@ -299,7 +299,7 @@ func TestTomorrow(t *testing.T) {
 		body:                "{foo:",
 		code:                200,
 		expectForecastCount: 0,
-		expectError:         errors.New("invalid character 'f' looking for beginning of object key string"),
+		expectError:         errors.New("unexpected API response '{foo:': invalid character 'f' looking for beginning of object key string"),
 	}, {
 		desc:                "when the response code is not OK",
 		body:                resp,
