@@ -85,6 +85,6 @@ type Condition struct {
 	Pressure     int64  `json:"pressure"`
 	Temperature  int64  `json:"temperature"`
 	Weather      string `json:"weather"`
-	Unit         string `json:"f"`
+	Unit         string `json:"unit"`
 	UnitPressure string `json:"unitPressure"`
 }
