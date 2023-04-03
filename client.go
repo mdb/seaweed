@@ -62,20 +62,21 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 	}
 }
 
-// WithLogger is a ClientOption to configure a *Client's logger.
+// WithLogger is a ClientOption to configure a *Client's Logger.
 func WithLogger(l *logrus.Logger) ClientOption {
 	return func(c *Client) {
 		c.Logger = l
 	}
 }
 
+// WithLogger is a ClientOption to configure a *Client's clock.
 func WithClock(clock Clock) ClientOption {
 	return func(c *Client) {
 		c.clock = clock
 	}
 }
 
-// NewClient takes an API key and returns a seaweed API client
+// NewClient takes an API key and returns a seaweed API client.
 func NewClient(apiKey string, opts ...ClientOption) *Client {
 	c := &Client{
 		"https://magicseaweed.com",
