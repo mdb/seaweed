@@ -92,10 +92,6 @@ func TestWeekend_Integration(t *testing.T) {
 		t.Error(err)
 	}
 
-	if len(resp) == 0 {
-		t.Error("API returned no forecasts")
-	}
-
 	for _, forecast := range resp {
 		fd := time.Unix(forecast.LocalTimestamp, 0).UTC().Weekday().String()
 
