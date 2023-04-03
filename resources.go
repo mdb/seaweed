@@ -59,8 +59,10 @@ type Swell struct {
 
 // Components represents a Seaweed API forecast's swell's components.
 type Components struct {
-	Combined Component `json:"combined"`
-	Primary  Component `json:"primary"`
+	Combined  Component `json:"combined"`
+	Primary   Component `json:"primary"`
+	Secondary Component `json:"secondary"`
+	Tertiary  Component `json:"tertiary"`
 }
 
 // Component represents a Seaweed API forecast's swell component.
