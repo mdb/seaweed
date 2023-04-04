@@ -191,6 +191,14 @@ func (c *Client) getForecast(spotID string) ([]Forecast, error) {
 	}
 }
 
+// Get is a convenience function that fetches the []Forecast associated with the
+// location it's passed using a default Client.
+func Get(key, location string) ([]Forecast, error) {
+	c := NewClient(key)
+
+	return c.Forecast(location)
+}
+
 func (c *Client) get(url string) ([]byte, error) {
 	resp, err := c.httpClient.Get(url)
 	if err != nil {
