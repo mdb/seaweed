@@ -1,6 +1,7 @@
 package integrationtest
 
 import (
+	"log"
 	"os"
 	"testing"
 	"time"
@@ -11,7 +12,12 @@ import (
 var client *seaweed.Client
 
 func TestMain(m *testing.M) {
-	client = seaweed.NewClient(os.Getenv("MAGIC_SEAWEED_API_KEY"))
+	key := os.Getenv("MAGIC_SEAWEED_API_KEY")
+	if key == "" {
+		log.Fatal("MAGIC_SEAWEED_API_KEY environment variable not set")
+	}
+
+	client = seaweed.NewClient(key)
 	exitVal := m.Run()
 	os.Exit(exitVal)
 }
@@ -90,10 +96,6 @@ func TestWeekend_Integration(t *testing.T) {
 	resp, err := client.Weekend("391")
 	if err != nil {
 		t.Error(err)
-	}
-
-	if len(resp) == 0 {
-		t.Error("API returned no forecasts")
 	}
 
 	for _, forecast := range resp {

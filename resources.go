@@ -26,6 +26,7 @@ type Forecast struct {
 	Swell          Swell     `json:"swell"`
 	Wind           Wind      `json:"wind"`
 	Condition      Condition `json:"condition"`
+	Charts         Charts    `json:"charts"`
 }
 
 // IsWeekend returns true if a forecast pertains to a Saturday or a Sunday.
@@ -52,14 +53,17 @@ type Swell struct {
 	AbsMinBreakingHeight float64    `json:"absMinBreakingHeight"`
 	MaxBreakingHeight    int        `json:"maxBreakingHeight"`
 	AbsMaxBreakingHeight float64    `json:"absMaxBreakingHeight"`
+	Probability          int        `json:"probability"`
 	Unit                 string     `json:"unit"`
 	Components           Components `json:"components"`
 }
 
 // Components represents a Seaweed API forecast's swell's components.
 type Components struct {
-	Combined Component `json:"combined"`
-	Primary  Component `json:"primary"`
+	Combined  Component `json:"combined"`
+	Primary   Component `json:"primary"`
+	Secondary Component `json:"secondary"`
+	Tertiary  Component `json:"tertiary"`
 }
 
 // Component represents a Seaweed API forecast's swell component.
@@ -85,6 +89,14 @@ type Condition struct {
 	Pressure     int64  `json:"pressure"`
 	Temperature  int64  `json:"temperature"`
 	Weather      string `json:"weather"`
-	Unit         string `json:"f"`
+	Unit         string `json:"unit"`
 	UnitPressure string `json:"unitPressure"`
+}
+
+// Charts represents a Seaweed API forecast's charts.
+type Charts struct {
+	Swell    string `json:"swell"`
+	Period   string `json:"period"`
+	Wind     string `json:"wind"`
+	Pressure string `json:"pressure"`
 }

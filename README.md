@@ -14,6 +14,24 @@ import (
 )
 
 func main() {
+  forecasts, err := seaweed.Get("<YOUR_API_KEY>", "<SOME_SPOT_ID")
+  if err != nil {
+    panic(err)
+  }
+
+  fmt.Printf("%# v", forecasts)
+}
+```
+
+Alternatively, instantiate a `seaweed.Client`:
+
+
+```go
+import (
+  "github.com/mdb/seaweed"
+)
+
+func main() {
   client := seaweed.NewClient("<YOUR_API_KEY>")
   resp, err := client.Forecast("<SOME_SPOT_ID>")
   if err != nil {

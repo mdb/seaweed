@@ -62,20 +62,21 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 	}
 }
 
-// WithLogger is a ClientOption to configure a *Client's logger.
+// WithLogger is a ClientOption to configure a *Client's Logger.
 func WithLogger(l *logrus.Logger) ClientOption {
 	return func(c *Client) {
 		c.Logger = l
 	}
 }
 
+// WithLogger is a ClientOption to configure a *Client's clock.
 func WithClock(clock Clock) ClientOption {
 	return func(c *Client) {
 		c.clock = clock
 	}
 }
 
-// NewClient takes an API key and returns a seaweed API client
+// NewClient takes an API key and returns a seaweed API client.
 func NewClient(apiKey string, opts ...ClientOption) *Client {
 	c := &Client{
 		"https://magicseaweed.com",
@@ -112,7 +113,7 @@ func (c *Client) Forecast(spot string) ([]Forecast, error) {
 
 // Today fetches the today's forecast for a given spot ID.
 func (c *Client) Today(spot string) ([]Forecast, error) {
-	today := []Forecast{}
+	var today []Forecast
 	now := c.clock.Now().UTC()
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
@@ -130,7 +131,7 @@ func (c *Client) Today(spot string) ([]Forecast, error) {
 
 // Tomorrow fetches tomorrow's forecast for a given spot ID.
 func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
-	tomorrow := []Forecast{}
+	var tomorrow []Forecast
 	tomorrowD := c.clock.Now().UTC().AddDate(0, 0, 1)
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
@@ -148,7 +149,7 @@ func (c *Client) Tomorrow(spot string) ([]Forecast, error) {
 
 // Weekend fetches the weekend's forecast for a given spot ID.
 func (c *Client) Weekend(spot string) ([]Forecast, error) {
-	weekendFs := []Forecast{}
+	var weekendFs []Forecast
 	forecasts, err := c.Forecast(spot)
 	if err != nil {
 		return weekendFs, err
@@ -176,18 +177,26 @@ func (c *Client) getForecast(spotID string) ([]Forecast, error) {
 		var errResp APIError
 		err = json.Unmarshal(body, &errResp)
 		if err != nil {
-			return forecasts, err
+			return forecasts, fmt.Errorf("unexpected API response '%s': %w", body, err)
 		}
 
 		return forecasts, errors.New(errResp.ErrorResponse.ErrorMsg)
 	default:
 		err = json.Unmarshal(body, &forecasts)
 		if err != nil {
-			return forecasts, err
+			return forecasts, fmt.Errorf("unexpected API response '%s': %w", body, err)
 		}
 
 		return forecasts, nil
 	}
+}
+
+// Get is a convenience function that fetches the []Forecast associated with the
+// location it's passed using a default Client.
+func Get(key, location string) ([]Forecast, error) {
+	c := NewClient(key)
+
+	return c.Forecast(location)
 }
 
 func (c *Client) get(url string) ([]byte, error) {
