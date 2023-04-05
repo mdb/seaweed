@@ -9,17 +9,34 @@ import (
 	"github.com/mdb/seaweed"
 )
 
+const envVarName string = "MAGIC_SEAWEED_API_KEY"
+
 var client *seaweed.Client
 
 func TestMain(m *testing.M) {
-	key := os.Getenv("MAGIC_SEAWEED_API_KEY")
+	key := os.Getenv(envVarName)
 	if key == "" {
-		log.Fatal("MAGIC_SEAWEED_API_KEY environment variable not set")
+		log.Fatalf("%s environment variable not set", envVarName)
 	}
 
 	client = seaweed.NewClient(key)
 	exitVal := m.Run()
 	os.Exit(exitVal)
+}
+
+func TestGet_Integration(t *testing.T) {
+	resp, err := seaweed.Get(os.Getenv(envVarName), "391")
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(resp) == 0 {
+		t.Error("Get returned no forecasts")
+	}
+
+	if resp[0].LocalTimestamp == 0 {
+		t.Error("Get returned no forecast timestamp")
+	}
 }
 
 func TestForecast_Integration(t *testing.T) {
